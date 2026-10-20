@@ -1,0 +1,2467 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django 단계별 학습 플랫폼</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans KR"', 'Inter', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        django: {
+                            DEFAULT: '#092E20',
+                            light: '#44B78B',
+                            accent: '#10B981',
+                            surface: '#0F172A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.15);
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 116, 139, 0.6);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 116, 139, 0.9);
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Light Mode overrides: carefully scoped so buttons, gradients, and VS Code blocks stay crisp */
+        html:not(.dark) body {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+        html:not(.dark) header {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            border-color: #e2e8f0 !important;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06) !important;
+        }
+        html:not(.dark) aside {
+            background-color: #ffffff !important;
+            border-color: #e2e8f0 !important;
+        }
+        html:not(.dark) .bg-slate-900,
+        html:not(.dark) .bg-slate-900\/90,
+        html:not(.dark) .bg-slate-900\/95,
+        html:not(.dark) .bg-slate-900\/60,
+        html:not(.dark) .bg-slate-900\/30 {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+            box-shadow: 0 2px 10px -2px rgba(15, 23, 42, 0.05) !important;
+        }
+        html:not(.dark) .bg-slate-950,
+        html:not(.dark) .bg-slate-950\/70,
+        html:not(.dark) .bg-slate-950\/50 {
+            background-color: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+            color: #1e293b !important;
+        }
+        html:not(.dark) .bg-slate-800,
+        html:not(.dark) .bg-slate-800\/80,
+        html:not(.dark) .bg-slate-800\/70 {
+            background-color: #f1f5f9 !important;
+            border-color: #cbd5e1 !important;
+            color: #1e293b !important;
+        }
+        html:not(.dark) input,
+        html:not(.dark) textarea,
+        html:not(.dark) select {
+            background-color: #ffffff !important;
+            border-color: #94a3b8 !important;
+            color: #0f172a !important;
+        }
+        html:not(.dark) input:focus,
+        html:not(.dark) textarea:focus,
+        html:not(.dark) select:focus {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+        }
+        /* Keep white text on primary/colored buttons & icons, darken elsewhere */
+        html:not(.dark) .text-white:not(.keep-white) {
+            color: #0f172a !important;
+        }
+        html:not(.dark) .keep-white,
+        html:not(.dark) .bg-emerald-600,
+        html:not(.dark) .bg-blue-600,
+        html:not(.dark) .from-emerald-600,
+        html:not(.dark) .from-emerald-600 * {
+            color: #ffffff !important;
+        }
+        html:not(.dark) .text-slate-100,
+        html:not(.dark) .text-slate-200,
+        html:not(.dark) .text-slate-300 {
+            color: #334155 !important;
+        }
+        html:not(.dark) .text-slate-400,
+        html:not(.dark) .text-slate-500 {
+            color: #64748b !important;
+        }
+        html:not(.dark) .border-slate-800,
+        html:not(.dark) .border-slate-800\/80,
+        html:not(.dark) .border-slate-800\/50,
+        html:not(.dark) .border-slate-700,
+        html:not(.dark) .border-slate-700\/60 {
+            border-color: #cbd5e1 !important;
+        }
+        html:not(.dark) .divide-slate-800\/60 > :not([hidden]) ~ :not([hidden]) {
+            border-color: #e2e8f0 !important;
+        }
+        html:not(.dark) #stepHeaderBanner {
+            background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%) !important;
+            border-color: #a7f3d0 !important;
+            box-shadow: 0 4px 16px -2px rgba(16, 185, 129, 0.1) !important;
+        }
+        html:not(.dark) .cta-banner {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%) !important;
+            border-color: #6ee7b7 !important;
+        }
+        html:not(.dark) .bg-emerald-950\/60,
+        html:not(.dark) .bg-emerald-950\/40,
+        html:not(.dark) .bg-emerald-950\/80 {
+            background-color: #ecfdf5 !important;
+            border-color: #10b981 !important;
+            color: #065f46 !important;
+        }
+        html:not(.dark) .bg-rose-950\/80,
+        html:not(.dark) .bg-rose-950\/60,
+        html:not(.dark) .bg-rose-950\/40,
+        html:not(.dark) .bg-rose-950 {
+            background-color: #fff1f2 !important;
+            border-color: #f43f5e !important;
+            color: #9f1239 !important;
+        }
+        html:not(.dark) .bg-blue-950\/60,
+        html:not(.dark) .bg-blue-950 {
+            background-color: #eff6ff !important;
+            border-color: #3b82f6 !important;
+            color: #1e40af !important;
+        }
+        html:not(.dark) .bg-amber-950\/60,
+        html:not(.dark) .bg-amber-950 {
+            background-color: #fffbeb !important;
+            border-color: #f59e0b !important;
+            color: #92400e !important;
+        }
+        html:not(.dark) .bg-purple-950 {
+            background-color: #faf5ff !important;
+            border-color: #a855f7 !important;
+            color: #6b21a8 !important;
+        }
+        html:not(.dark) .text-emerald-200,
+        html:not(.dark) .text-emerald-300,
+        html:not(.dark) .text-emerald-400 {
+            color: #047857 !important;
+        }
+        html:not(.dark) .text-amber-300,
+        html:not(.dark) .text-amber-400 {
+            color: #b45309 !important;
+        }
+        html:not(.dark) .text-blue-300,
+        html:not(.dark) .text-blue-400 {
+            color: #1d4ed8 !important;
+        }
+        html:not(.dark) .text-purple-300 {
+            color: #7e22ce !important;
+        }
+        html:not(.dark) .text-rose-200,
+        html:not(.dark) .text-rose-300,
+        html:not(.dark) .text-rose-400 {
+            color: #be123c !important;
+        }
+
+        /* VS Code Dark+ Editor Always Keeps Authentic Dark Editor Background & Colors */
+        .vscode-editor {
+            background-color: #1e1e1e !important;
+            color: #d4d4d4 !important;
+            border: 1px solid #333333 !important;
+        }
+        .vscode-header {
+            background-color: #252526 !important;
+            border-bottom: 1px solid #333333 !important;
+            color: #cccccc !important;
+        }
+        .vscode-code {
+            background-color: #1e1e1e !important;
+            color: #d4d4d4 !important;
+            font-family: 'JetBrains Mono', monospace;
+            tab-size: 4;
+            -webkit-overflow-scrolling: touch;
+        }
+        .vscode-line {
+            display: flex;
+            min-height: 1.45rem;
+            line-height: 1.45rem;
+        }
+        .vscode-line:hover {
+            background-color: rgba(255, 255, 255, 0.04);
+        }
+        .vscode-ln {
+            width: 2rem;
+            padding-right: 0.75rem;
+            text-align: right;
+            color: #858585 !important;
+            user-select: none;
+            flex-shrink: 0;
+        }
+        @media (min-width: 640px) {
+            .vscode-ln {
+                width: 2.5rem;
+                padding-right: 1rem;
+            }
+        }
+        .vscode-lc {
+            flex: 1;
+            white-space: pre;
+            color: #d4d4d4 !important;
+        }
+        /* VS Code Syntax Token Palette (Dark+ Theme) */
+        .tok-kw { color: #c586c0 !important; font-weight: 500; }       /* import, from, return, if, else, for, in */
+        .tok-def { color: #569cd6 !important; font-weight: 500; }      /* def, class, True, False, None */
+        .tok-cls { color: #4ec9b0 !important; }                        /* Class names, Models, Forms */
+        .tok-fn { color: #dcdcaa !important; }                         /* Function & method calls */
+        .tok-str { color: #ce9178 !important; }                        /* Strings */
+        .tok-com { color: #6a9955 !important; font-style: italic; }    /* Comments */
+        .tok-num { color: #b5cea8 !important; }                        /* Numbers */
+        .tok-var { color: #9cdcfe !important; }                        /* Variables, parameters, attributes */
+        .tok-tag { color: #569cd6 !important; }                        /* HTML tags */
+        .tok-attr { color: #9cdcfe !important; }                       /* HTML attributes */
+        .tok-dtl { color: #ffd700 !important; font-weight: 600; }      /* DTL {{ }} and {% %} delimiters */
+        .tok-cmd { color: #4fc1ff !important; font-weight: 600; }      /* Shell prompt $ / >>> */
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-white min-h-screen flex flex-col transition-colors duration-200">
+
+    <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 transition-colors">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white shrink-0" aria-label="커리큘럼 메뉴 열기">
+                    <i class="fa-solid fa-bars text-base sm:text-lg"></i>
+                </button>
+                <div class="flex items-center gap-2 sm:gap-2.5 min-w-0">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-900 flex items-center justify-center shadow-lg shadow-emerald-900/40 border border-emerald-500/30 shrink-0">
+                        <i class="fa-brands fa-python text-lg sm:text-xl text-white keep-white"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="hidden sm:flex items-center gap-2">
+                            <span class="text-[11px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Python Web Track</span>
+                            <span class="text-xs text-slate-400 hidden md:inline">인터랙티브 실습 로드맵</span>
+                        </div>
+                        <h1 class="text-sm sm:text-lg font-extrabold tracking-tight text-white truncate">Django 단계별 마스터 코스</h1>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overall Progress & Controls -->
+            <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                <div class="hidden md:flex flex-col w-44 lg:w-56">
+                    <div class="flex justify-between text-xs mb-1">
+                        <span class="text-slate-400 font-medium">전체 학습 진도율</span>
+                        <span id="progressText" class="text-emerald-400 font-bold">0% (0/7 완료)</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden p-0.5">
+                        <div id="progressBar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                    <button id="themeToggleBtn" class="text-xs p-2 sm:px-3 sm:py-2 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-slate-300 transition flex items-center gap-1.5 font-medium" title="다크 모드 / 라이트 모드 전환">
+                        <i id="themeToggleIcon" class="fa-solid fa-sun text-amber-400 text-sm"></i>
+                        <span id="themeToggleLabel" class="hidden sm:inline">라이트 모드</span>
+                    </button>
+                    <button id="freeModeToggle" class="text-xs p-2 sm:px-3 sm:py-2 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-slate-300 transition flex items-center gap-1.5" title="순차 잠금을 해제하거나 다시 잠급니다">
+                        <i id="lockModeIcon" class="fa-solid fa-lock text-amber-400 text-sm"></i>
+                        <span id="lockModeLabel" class="hidden xl:inline">순차 학습 모드</span>
+                    </button>
+                    <button id="cheatSheetBtn" class="text-xs p-2 sm:px-3 sm:py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 transition flex items-center gap-1.5 font-medium" title="명령어 요약집">
+                        <i class="fa-solid fa-terminal text-sm"></i>
+                        <span class="hidden sm:inline">명령어 요약집</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile-only compact progress bar -->
+        <div class="md:hidden mt-2 pt-2 border-t border-slate-800/70 flex items-center justify-between gap-3">
+            <span class="text-[11px] text-slate-400 font-medium shrink-0">학습 진도율</span>
+            <div class="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div id="mobileProgressBar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="mobileProgressText" class="text-[11px] text-emerald-400 font-bold shrink-0">0% (0/7)</span>
+        </div>
+    </header>
+
+    <div class="flex-1 max-w-7xl w-full mx-auto flex relative">
+        
+        <!-- Left Sidebar: Step-by-Step Roadmap -->
+        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 lg:z-30 w-[85vw] max-w-xs lg:w-80 bg-slate-900/95 lg:bg-transparent border-r border-slate-800/80 p-4 overflow-y-auto transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between shrink-0 shadow-2xl lg:shadow-none">
+            <div>
+                <div class="mb-4 px-1 flex items-start justify-between gap-2">
+                    <div>
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">커리큘럼 로드맵 (7단계)</h2>
+                        <p class="text-xs text-slate-500 mt-1">각 단계의 개념 학습 + 실습 + 퀴즈를 통과하면 다음 단계가 열립니다.</p>
+                    </div>
+                    <button id="closeMobileSidebarBtn" class="lg:hidden p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white shrink-0" aria-label="메뉴 닫기">
+                        <i class="fa-solid fa-xmark text-base"></i>
+                    </button>
+                </div>
+                <nav id="stepNavList" class="space-y-2">
+                    <!-- Populated dynamically via JS -->
+                </nav>
+            </div>
+
+            <div class="mt-8 p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400 space-y-2">
+                <div class="flex items-center justify-between text-slate-300 font-semibold">
+                    <span><i class="fa-solid fa-layer-group text-emerald-400 mr-1.5"></i>핵심 마스터 모듈</span>
+                    <span class="text-[11px] bg-slate-800 px-2 py-0.5 rounded">7 Modules</span>
+                </div>
+                <ul class="space-y-1 text-[11px] text-slate-400 font-mono truncate">
+                    <li>• 01. Intro & MTV Design Pattern</li>
+                    <li>• 02. Template (DTL) & URLs</li>
+                    <li>• 03. Model & Migrations & Admin</li>
+                    <li>• 04. ORM & QuerySet API</li>
+                    <li>• 05. ORM with View (CRUD)</li>
+                    <li>• 06. Form & ModelForm</li>
+                    <li>• 07. Static & Media Files</li>
+                </ul>
+                <button id="resetProgressBtn" class="w-full mt-2 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-950/60 hover:text-rose-300 hover:border-rose-700/50 border border-slate-700/60 text-slate-400 transition text-center">
+                    <i class="fa-solid fa-rotate-left mr-1"></i> 학습 기록 초기화
+                </button>
+            </div>
+        </aside>
+
+        <!-- Backdrop for mobile sidebar -->
+        <div id="sidebarBackdrop" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 hidden lg:hidden"></div>
+
+        <!-- Main Learning Workspace -->
+        <main class="flex-1 min-w-0 p-3 sm:p-6 lg:p-8 overflow-y-auto">
+            
+            <!-- Step Header Banner -->
+            <div id="stepHeaderBanner" class="rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/40 border border-slate-800 p-4 sm:p-6 mb-4 sm:mb-6 shadow-xl">
+                <!-- Populated dynamically -->
+            </div>
+
+            <!-- Sub-navigation Tabs for the Active Step (Mobile-first 3-col grid, flex on sm+) -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-6 border-b border-slate-800 pb-3">
+                <div class="grid grid-cols-3 sm:flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto" role="tablist">
+                    <button data-tab="concept" class="step-tab-btn px-2.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 bg-emerald-600 text-white keep-white shadow-lg shadow-emerald-900/30">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span class="truncate">1. 개념<span class="hidden sm:inline"> & 코드</span></span>
+                    </button>
+                    <button data-tab="lab" class="step-tab-btn px-2.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 bg-slate-900 text-slate-400 hover:text-white border border-slate-800">
+                        <i class="fa-solid fa-flask"></i>
+                        <span class="truncate">2. 실습실</span>
+                    </button>
+                    <button data-tab="quiz" class="step-tab-btn px-2.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 bg-slate-900 text-slate-400 hover:text-white border border-slate-800">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span class="truncate">3. 퀴즈<span class="hidden sm:inline"> & 완료</span></span>
+                    </button>
+                </div>
+
+                <div class="hidden md:flex items-center gap-2 text-xs text-slate-400 shrink-0">
+                    <span>단축키:</span>
+                    <kbd class="px-2 py-0.5 bg-slate-800 rounded border border-slate-700 font-mono">1</kbd>
+                    <kbd class="px-2 py-0.5 bg-slate-800 rounded border border-slate-700 font-mono">2</kbd>
+                    <kbd class="px-2 py-0.5 bg-slate-800 rounded border border-slate-700 font-mono">3</kbd>
+                </div>
+            </div>
+
+            <!-- Dynamic Tab Content Container -->
+            <div id="tabContentContainer" class="fade-in">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- Bottom Step Navigation Bar -->
+            <div class="mt-8 sm:mt-10 pt-5 sm:pt-6 border-t border-slate-800/80 flex items-center justify-between gap-2 sm:gap-4">
+                <button id="prevStepBtn" class="px-3.5 sm:px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 sm:gap-2 disabled:opacity-40 disabled:pointer-events-none">
+                    <i class="fa-solid fa-arrow-left"></i> <span>이전<span class="hidden sm:inline"> 단계</span></span>
+                </button>
+                <div id="bottomStepIndicator" class="text-xs text-slate-400 font-medium text-center">
+                    Step 1 / 7
+                </div>
+                <button id="nextStepBtn" class="px-4 sm:px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white keep-white text-xs sm:text-sm font-bold transition flex items-center gap-1.5 sm:gap-2 shadow-lg shadow-emerald-900/40 disabled:opacity-40 disabled:pointer-events-none">
+                    <span>다음<span class="hidden sm:inline"> 단계로</span></span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <div id="cheatSheetModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden fade-in">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/50">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-terminal text-emerald-400 text-lg"></i>
+                    <h3 class="font-bold text-lg text-white">Django 필수 명령어 & 문법 치트시트</h3>
+                </div>
+                <button id="closeCheatSheetBtn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                <div class="space-y-3">
+                    <h4 class="font-bold text-emerald-400 border-b border-slate-800 pb-1.5">1. 프로젝트 초기 설정 & 실행</h4>
+                    <div class="vscode-editor p-3.5 rounded-xl font-mono text-xs space-y-1.5">
+                        <p class="tok-com"># 가상환경 생성 및 활성화</p>
+                        <p><span class="tok-cmd">$</span> python -m venv venv</p>
+                        <p><span class="tok-cmd">$</span> source venv/Scripts/activate</p>
+                        <p class="tok-com pt-1"># 패키지 설치 및 고정</p>
+                        <p><span class="tok-cmd">$</span> pip install django</p>
+                        <p><span class="tok-cmd">$</span> pip freeze &gt; requirements.txt</p>
+                        <p class="tok-com pt-1"># 프로젝트 & 앱 생성</p>
+                        <p><span class="tok-cmd">$</span> django-admin startproject firstpjt .</p>
+                        <p><span class="tok-cmd">$</span> python manage.py startapp articles</p>
+                        <p><span class="tok-cmd">$</span> python manage.py runserver</p>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <h4 class="font-bold text-emerald-400 border-b border-slate-800 pb-1.5">2. Model & Migrations & Admin</h4>
+                    <div class="vscode-editor p-3.5 rounded-xl font-mono text-xs space-y-1.5">
+                        <p class="tok-com"># 설계도(migration) 생성 및 DB 반영</p>
+                        <p><span class="tok-cmd">$</span> python manage.py makemigrations</p>
+                        <p><span class="tok-cmd">$</span> python manage.py migrate</p>
+                        <p class="tok-com pt-1"># 마이그레이션 상태 및 SQL 확인</p>
+                        <p><span class="tok-cmd">$</span> python manage.py showmigrations</p>
+                        <p><span class="tok-cmd">$</span> python manage.py sqlmigrate articles 0001</p>
+                        <p class="tok-com pt-1"># 관리자(Superuser) 계정 생성</p>
+                        <p><span class="tok-cmd">$</span> python manage.py createsuperuser</p>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <h4 class="font-bold text-emerald-400 border-b border-slate-800 pb-1.5">3. Django ORM 핵심 QuerySet API</h4>
+                    <div class="vscode-editor p-3.5 rounded-xl font-mono text-xs space-y-1.5">
+                        <p class="tok-com"># 생성 (Create)</p>
+                        <p><span class="tok-var">article</span> = <span class="tok-cls">Article</span>(<span class="tok-var">title</span>=<span class="tok-str">'제목'</span>, <span class="tok-var">content</span>=<span class="tok-str">'내용'</span>)</p>
+                        <p><span class="tok-var">article</span>.<span class="tok-fn">save</span>()</p>
+                        <p class="tok-com pt-1"># 조회 (Read)</p>
+                        <p><span class="tok-cls">Article</span>.<span class="tok-var">objects</span>.<span class="tok-fn">all</span>()</p>
+                        <p><span class="tok-cls">Article</span>.<span class="tok-var">objects</span>.<span class="tok-fn">filter</span>(<span class="tok-var">title</span>=<span class="tok-str">'제목'</span>)</p>
+                        <p><span class="tok-cls">Article</span>.<span class="tok-var">objects</span>.<span class="tok-fn">get</span>(<span class="tok-var">pk</span>=<span class="tok-num">1</span>)</p>
+                        <p class="tok-com pt-1"># 수정 & 삭제 (Update & Delete)</p>
+                        <p><span class="tok-var">article</span>.<span class="tok-var">title</span> = <span class="tok-str">'수정제목'</span>; <span class="tok-var">article</span>.<span class="tok-fn">save</span>()</p>
+                        <p><span class="tok-var">article</span>.<span class="tok-fn">delete</span>()</p>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <h4 class="font-bold text-emerald-400 border-b border-slate-800 pb-1.5">4. Form / ModelForm & Static/Media</h4>
+                    <div class="vscode-editor p-3.5 rounded-xl font-mono text-xs space-y-1.5">
+                        <p class="tok-com"># ModelForm 기본 사용 (views.py)</p>
+                        <p><span class="tok-var">form</span> = <span class="tok-cls">ArticleForm</span>(<span class="tok-var">request</span>.<span class="tok-var">POST</span>, <span class="tok-var">request</span>.<span class="tok-var">FILES</span>)</p>
+                        <p><span class="tok-kw">if</span> <span class="tok-var">form</span>.<span class="tok-fn">is_valid</span>():</p>
+                        <p>&nbsp;&nbsp;&nbsp;&nbsp;<span class="tok-var">article</span> = <span class="tok-var">form</span>.<span class="tok-fn">save</span>()</p>
+                        <p class="tok-com pt-1"># 정적 파일 로드 (Template 최상단)</p>
+                        <p><span class="tok-dtl">{%</span> <span class="tok-kw">load</span> static <span class="tok-dtl">%}</span></p>
+                        <p><span class="tok-tag">&lt;img</span> <span class="tok-attr">src</span>=<span class="tok-str">"</span><span class="tok-dtl">{%</span> <span class="tok-kw">static</span> <span class="tok-str">'articles/sample.png'</span> <span class="tok-dtl">%}</span><span class="tok-str">"</span><span class="tok-tag">&gt;</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Toast Notification -->
+    <div id="toastBox" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-slate-900 border border-emerald-500/50 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+            <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+            <span id="toastMsg" class="text-sm font-medium">알림 메시지</span>
+        </div>
+    </div>
+
+    <script>
+        const CURRICULUM_DATA = [
+            {
+                id: 1,
+                stepNum: "STEP 01",
+                title: "Django Intro & MTV 디자인 패턴",
+                topicTag: "Architecture & Setup",
+                subtitle: "프레임워크의 이해, 클라이언트-서버 구조, Django 프로젝트와 앱 시작하기, MTV 패턴의 데이터 흐름",
+                objectives: [
+                    "Web Framework의 필요성과 클라이언트(요청) - 서버(응답) 모델을 설명할 수 있다.",
+                    "가상환경(venv)을 설정하고 startproject와 startapp으로 기본 구조를 생성할 수 있다.",
+                    "settings.py의 INSTALLED_APPS에 생성한 앱을 올바른 순서로 등록할 수 있다.",
+                    "Django의 MTV(Model-Template-View) 디자인 패턴과 urls.py → views.py → templates 흐름을 이해한다."
+                ],
+                concepts: [
+                    {
+                        badge: "핵심 개념 1",
+                        title: "Framework & MTV 디자인 패턴",
+                        desc: "소프트웨어 디자인 패턴인 MVC(Model-View-Controller)를 Django에서는 독자적인 용어인 MTV(Model-Template-View)로 부릅니다. 역할은 동일하며, 관심사를 분리하여 유지보수를 쉽게 만듭니다.",
+                        points: [
+                            "Model (데이터): 응용프로그램의 핵심 데이터와 DB 테이블 구조를 관리 (MVC의 Model)",
+                            "Template (화면): 사용자에게 보여지는 UI/레이아웃을 표현 (MVC의 View)",
+                            "View (로직): HTTP 요청을 받아 모델을 조회/가공하고 템플릿에 전달하는 중심 컨트롤러 (MVC의 Controller)",
+                            "URLs (URL Dispatcher): 클라이언트의 요청 주소를 분석하여 알맞은 View 함수로 연결해주는 이정표"
+                        ],
+                        codeTitle: "urls.py & views.py 기본 요청-응답 흐름",
+                        code: `# 1. firstpjt/settings.py (앱 등록 필수!)
+INSTALLED_APPS = [
+    'articles', # 사용자 생성 앱을 상단에 등록 권장
+    'django.contrib.admin',
+    'django.contrib.auth',
+    # ...
+]
+
+# 2. firstpjt/urls.py (요청 경로 매핑)
+from django.contrib import admin
+from django.urls import path
+from articles import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('articles/', views.index), # /articles/ 요청 시 views.index 호출
+]
+
+# 3. articles/views.py (첫 번째 인자로 반드시 request 수신)
+from django.shortcuts import render
+
+def index(request):
+    # 메인 페이지를 담은 템플릿을 렌더링하여 HTTP 응답 반환
+    return render(request, 'articles/index.html')`
+                    },
+                    {
+                        badge: "핵심 개념 2",
+                        title: "Project vs Application 구조",
+                        desc: "Django 프로젝트는 여러 개의 앱(Application)들의 집합입니다. 프로젝트는 전체 설정(settings.py)과 루트 URL을 담당하고, 앱은 게시글(articles), 회원(accounts) 등 독립적인 기능 단위를 담당합니다.",
+                        points: [
+                            "반드시 앱을 생성(startapp)한 직후 settings.py의 INSTALLED_APPS에 등록해야 합니다. (선 생성 후 등록!)",
+                            "manage.py: Django 프로젝트와 다양한 방법으로 상호작용하는 커맨드라인 유틸리티",
+                            "__init__.py, asgi.py, wsgi.py 등 자동 생성되는 핵심 설정 파일들은 임의로 수정하거나 삭제하지 않습니다."
+                        ],
+                        codeTitle: "프로젝트 생성 루틴 (터미널 명령어 순서)",
+                        code: `# 1. 가상환경 생성 및 활성화
+$ python -m venv venv
+$ source venv/Scripts/activate   # (Mac/Linux: source venv/bin/activate)
+
+# 2. Django 설치 및 패키지 목록 저장
+$ pip install django
+$ pip freeze > requirements.txt
+
+# 3. 프로젝트 생성 (뒤에 마침표 '.'를 찍어 현재 폴더에 생성)
+$ django-admin startproject firstpjt .
+
+# 4. 앱 생성 (복수형 이름 권장: articles, pages 등)
+$ python manage.py startapp articles
+
+# 5. 개발 서버 실행
+$ python manage.py runserver`
+                    }
+                ],
+                labType: "mtv_flow",
+                quiz: [
+                    {
+                        q: "Q1. 일반적인 MVC 디자인 패턴의 'Controller(컨트롤러)'에 대응하는 Django MTV 패턴의 구성 요소는?",
+                        options: ["Model", "Template", "View", "URLs"],
+                        answer: 2,
+                        explanation: "Django에서는 데이터를 가공하고 응답을 반환하는 중심 제어자(Controller) 역할을 'View(views.py)'가 수행하며, 화면(View) 역할은 'Template'이 수행합니다."
+                    },
+                    {
+                        q: "Q2. `python manage.py startapp articles` 명령어로 앱을 생성한 직후 반드시 해야 하는 작업은?",
+                        options: [
+                            "db.sqlite3 파일을 수동으로 생성한다.",
+                            "settings.py의 INSTALLED_APPS 리스트에 'articles'를 추가한다.",
+                            "admin.py를 삭제하고 다시 만든다.",
+                            "manage.py 파일 안에 앱 이름을 적는다."
+                        ],
+                        answer: 1,
+                        explanation: "앱을 생성한 뒤 settings.py의 INSTALLED_APPS에 등록하지 않으면 Django가 해당 앱의 템플릿이나 모델, 마이그레이션을 인식하지 못합니다."
+                    },
+                    {
+                        q: "Q3. Django의 모든 View 함수가 첫 번째 매개변수로 반드시 받아야 하는 객체는?",
+                        options: ["response", "context", "request", "self"],
+                        answer: 2,
+                        explanation: "View 함수는 클라이언트의 요청 정보를 담고 있는 HTTP 요청 객체(`request`)를 항상 첫 번째 인자로 전달받습니다."
+                    }
+                ]
+            },
+            {
+                id: 2,
+                stepNum: "STEP 02",
+                title: "Django Template & URLs",
+                topicTag: "DTL & URL Routing",
+                subtitle: "DTL(Django Template Language) 4대 문법, 템플릿 상속(extends/block), Variable Routing과 App URL Mapping",
+                objectives: [
+                    "DTL(Django Template Language)의 변수, 필터, 태그, 주석 문법을 자유롭게 사용할 수 있다.",
+                    "base.html과 {% extends %}, {% block %}을 활용하여 템플릿 재사용성(상속)을 구현할 수 있다.",
+                    "HTML form 태그를 통해 throw & catch 방식으로 요청 데이터(request.GET)를 주고받을 수 있다.",
+                    "include()를 활용한 앱 URL 분리, Variable Routing, app_name과 {% url %} 태그를 사용할 수 있다."
+                ],
+                concepts: [
+                    {
+                        badge: "핵심 개념 1",
+                        title: "DTL (Django Template Language) 4가지 핵심 문법",
+                        desc: "Template에서 조건, 반복, 변수 치환 등 프로그래밍적 기능을 제공하는 시스템입니다. (단, Python 코드가 그대로 실행되는 것이 아니므로 복잡한 로직은 View에서 처리해야 합니다.)",
+                        points: [
+                            "1. Variable {{ variable }}: render()의 3번째 인자인 context 딕셔너리의 키(key) 이름으로 값을 출력. 점(.)으로 속성/인덱스 접근 가능",
+                            "2. Filters {{ variable|filter }}: 표시할 변수를 수정할 때 사용 (예: {{ name|lower }}, {{ content|truncatewords:30 }}, {{ menu|random }})",
+                            "3. Tags {% tag %}: 반복({% for %}...{% endfor %}), 조건({% if %}...{% endif %}), 상속 등을 수행",
+                            "4. Comments {# 주석 #} 또는 {% comment %}...{% endcomment %}: 템플릿 내 주석 처리"
+                        ],
+                        codeTitle: "views.py의 context 전달과 DTL 렌더링 예시",
+                        code: `# articles/views.py
+def index(request):
+    context = {
+        'name': '홍길동',
+        'foods': ['국밥', '돈까스', '마라탕'],
+    }
+    return render(request, 'articles/index.html', context)
+
+<!-- articles/templates/articles/index.html -->
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>안녕하세요, {{ name }}님! (글자수: {{ name|length }})</h1>
+  <ul>
+    {% for food in foods %}
+      <li>{{ forloop.counter }}번째 메뉴: {{ food }}</li>
+    {% empty %}
+      <li>메뉴가 없습니다.</li>
+    {% endfor %}
+  </ul>
+{% endblock content %}`
+                    },
+                    {
+                        badge: "핵심 개념 2",
+                        title: "App URL Mapping (include), Variable Routing, Naming URL",
+                        desc: "프로젝트가 커지면 모든 URL을 프로젝트의 urls.py에서 관리하기 어렵습니다. 각 앱에 urls.py를 만들고 include()로 위임하며, URL에 변수를 담거나 별칭(name)을 붙여 하드코딩을 제거합니다.",
+                        points: [
+                            "include(): 프로젝트 urls.py에서 특정 접두사(예: 'articles/') 이후의 URL 처리를 각 앱의 urls.py로 위임",
+                            "Variable Routing: path('greeting/<str:name>/', views.greeting) 처럼 URL 일부를 변수로 받아 View 함수의 인자로 전달",
+                            "app_name & name: URL 경로가 바뀌어도 템플릿의 {% url 'articles:index' %} 태그를 통해 수정 없이 안전하게 참조"
+                        ],
+                        codeTitle: "URL 분리(include) 및 Variable Routing 구조",
+                        code: `# 1. firstpjt/urls.py (프로젝트 루트 URL)
+from django.urls import path, include
+
+urlpatterns = [
+    path('articles/', include('articles.urls')),
+]
+
+# 2. articles/urls.py (앱 전용 URL + 이름 공간 설정)
+from django.urls import path
+from . import views
+
+app_name = 'articles'
+urlpatterns = [
+    path('', views.index, name='index'),
+    path('detail/<int:pk>/', views.detail, name='detail'),
+]
+
+# 3. articles/views.py (경로 변수 pk를 매개변수로 수신!)
+def detail(request, pk):
+    context = {'pk': pk}
+    return render(request, 'articles/detail.html', context)`
+                    }
+                ],
+                labType: "dtl_sandbox",
+                quiz: [
+                    {
+                        q: "Q1. DTL(Django Template Language)에서 템플릿 상속을 받을 때 자식 템플릿의 **최상단 첫 줄**에 작성해야 하는 태그는?",
+                        options: ["{% include 'base.html' %}", "{% extends 'base.html' %}", "{% block content %}", "{{ base.html }}"],
+                        answer: 1,
+                        explanation: "자식 템플릿이 부모 템플릿을 상속받으려면 파일의 가장 첫 줄에 `{% extends '부모템플릿경로' %}`가 위치해야 합니다."
+                    },
+                    {
+                        q: "Q2. `path('hello/<str:name>/', views.hello)`와 같이 Variable Routing을 설정했을 때, `views.py`의 함수 정의로 올바른 것은?",
+                        options: [
+                            "def hello(request):",
+                            "def hello(name):",
+                            "def hello(request, name):",
+                            "def hello(request, str):"
+                        ],
+                        answer: 2,
+                        explanation: "Variable Routing으로 지정한 변수명(`name`)은 View 함수의 두 번째 인자(첫 번째는 항상 `request`)로 동일하게 선언해야 전달받을 수 있습니다."
+                    },
+                    {
+                        q: "Q3. `articles/urls.py`에 `app_name = 'articles'`와 `path('index/', views.index, name='index')`가 정의되어 있을 때, 템플릿에서 이 주소를 부르는 올바른 태그는?",
+                        options: [
+                            "{% url 'index' %}",
+                            "{% url 'articles:index' %}",
+                            "{{ url 'articles/index' }}",
+                            "{% link 'articles:index' %}"
+                        ],
+                        answer: 1,
+                        explanation: "`app_name`이 설정된 경우 `{% url 'app_name:path_name' %}` 형식인 `{% url 'articles:index' %}`로 참조해야 합니다."
+                    }
+                ]
+            },
+            {
+                id: 3,
+                stepNum: "STEP 03",
+                title: "Django Model & Migrations & Admin",
+                topicTag: "Database Schema & Admin",
+                subtitle: "데이터베이스 테이블 설계도(Model Class), Field Types & Options, 2단계 Migrations 과정, Admin 사이트",
+                objectives: [
+                    "models.Model을 상속받아 DB 테이블의 청사진(Model 클래스)을 작성할 수 있다.",
+                    "CharField, TextField, DateTimeField 등 주요 필드 타입과 max_length, auto_now_add, auto_now 옵션을 구분할 수 있다.",
+                    "makemigrations와 migrate 명령어의 역할 차이와 추가 필드 생성 시 default 값 처리 과정을 이해한다.",
+                    "createsuperuser로 관리자 계정을 만들고 admin.py에 모델을 등록하여 데이터를 검증할 수 있다."
+                ],
+                concepts: [
+                    {
+                        badge: "핵심 개념 1",
+                        title: "Django Model 클래스와 Field Types / Options",
+                        desc: "Django Model은 DB의 테이블을 정의하고 데이터를 조작할 수 있는 기능들을 제공하는 '테이블 구조 설계도(blueprint)'입니다. id(PK) 필드는 Django가 자동 생성합니다.",
+                        points: [
+                            "django.db.models.Model 부모 클래스를 상속받아 테이블에 필요한 모든 내장 기능을 그대로 활용합니다.",
+                            "CharField(max_length=N): 제한된 길이의 문자열 저장 (max_length는 필수 옵션!)",
+                            "TextField(): 길이 제한이 없는 대용량 텍스트 저장",
+                            "DateTimeField 옵션 비교: auto_now_add=True (최초 생성 시 1회 현재 시간 저장) vs auto_now=True (저장/수정될 때마다 현재 시간 갱신)",
+                            "주요 제약조건 옵션: null (DB에서 NULL 허용 여부, 기본 False), blank (form에서 빈 값 허용 여부, 기본 False), default (기본값)"
+                        ],
+                        codeTitle: "articles/models.py 작성 예시",
+                        code: `# articles/models.py
+from django.db import models
+
+class Article(models.Model):
+    # 클래스 변수명 == 테이블의 각 필드(열, Column) 이름
+    title = models.CharField(max_length=10)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True) # 최초 생성 시각
+    updated_at = models.DateTimeField(auto_now=True)     # 최종 수정 시각`
+                    },
+                    {
+                        badge: "핵심 개념 2",
+                        title: "Migrations 2단계 핵심 과정 & Automatic Admin Interface",
+                        desc: "모델 클래스의 변경사항(필드 생성, 수정, 삭제)을 DB(db.sqlite3)에 최종 반영하는 과정입니다. 마치 git commit처럼 설계도를 쌓아가며 버전 관리를 합니다.",
+                        points: [
+                            "1단계 `python manage.py makemigrations`: models.py(설계도 초안)를 바탕으로 최종 설계도(0001_initial.py 등) 작성",
+                            "2단계 `python manage.py migrate`: 최종 설계도를 DB(db.sqlite3)에 전달하여 실제 테이블(articles_article) 반영",
+                            "기존 테이블에 새 필드를 추가할 때: 기존 행(row)들을 채울 기본값(default)을 물어보며, 날짜 필드의 경우 Enter를 눌러 timezone.now를 적용할 수 있습니다.",
+                            "Admin 사이트: `createsuperuser`로 계정 생성 후 `articles/admin.py`에 `admin.site.register(Article)`을 등록해야 화면에 나타납니다.",
+                            "DB 초기화 주의사항: migrations 폴더 자체나 `__init__.py`는 절대 지우지 말고, 숫자로 시작하는 파일(0001_...)과 db.sqlite3만 삭제합니다."
+                        ],
+                        codeTitle: "Migrations 명령어 및 admin.py 등록",
+                        code: `# 터미널: 마이그레이션 생성 및 반영
+$ python manage.py makemigrations
+$ python manage.py migrate
+
+# 참고 명령어: 반영 여부([X]) 확인 및 번역된 SQL문 확인
+$ python manage.py showmigrations
+$ python manage.py sqlmigrate articles 0001
+
+# 관리자 계정 생성
+$ python manage.py createsuperuser
+
+# articles/admin.py (Admin 사이트에 모델 등록 필수!)
+from django.contrib import admin
+from .models import Article
+
+admin.site.register(Article)`
+                    }
+                ],
+                labType: "model_migration",
+                quiz: [
+                    {
+                        q: "Q1. `CharField`에서 필수로 지정해야 하는 옵션과, 데이터가 **처음 생성될 때만** 현재 날짜/시간을 자동 저장하는 `DateTimeField` 옵션의 조합으로 옳은 것은?",
+                        options: [
+                            "max_length / auto_now=True",
+                            "max_length / auto_now_add=True",
+                            "default / auto_now_add=True",
+                            "blank / auto_now=True"
+                        ],
+                        answer: 1,
+                        explanation: "`CharField`는 최대 길이를 결정하는 `max_length`가 필수 옵션이며, 데이터가 처음 생성될 때만 저장하는 옵션은 `auto_now_add=True`입니다 (`auto_now=True`는 저장될 때마다 갱신)."
+                    },
+                    {
+                        q: "Q2. `models.py`에 변경사항이 생겼을 때 최종 설계도(migration 파일)를 생성하는 명령어(1)와 이를 실제 DB에 반영하는 명령어(2)의 올바른 순서는?",
+                        options: [
+                            "(1) migrate → (2) makemigrations",
+                            "(1) makemigrations → (2) migrate",
+                            "(1) sqlmigrate → (2) showmigrations",
+                            "(1) startapp → (2) makemigrations"
+                        ],
+                        answer: 1,
+                        explanation: "반드시 `1. model class 변경 → 2. makemigrations (설계도 생성) → 3. migrate (DB 반영)` 순서로 진행해야 합니다."
+                    },
+                    {
+                        q: "Q3. 데이터베이스를 초기화할 때 **절대 지우지 않도록 주의해야 하는 파일/폴더**는?",
+                        options: [
+                            "db.sqlite3 파일",
+                            "0001_initial.py 파일",
+                            "migrations 폴더와 그 안의 __init__.py 파일",
+                            "0002_article_created_at.py 파일"
+                        ],
+                        answer: 2,
+                        explanation: "데이터베이스 초기화 시 `migrations` 폴더 자체와 `__init__.py` 파일은 남겨두고, 숫자로 시작하는 설계도 파일들과 `db.sqlite3` 파일만 삭제해야 합니다."
+                    }
+                ]
+            },
+            {
+                id: 4,
+                stepNum: "STEP 04",
+                title: "Django ORM (QuerySet API)",
+                topicTag: "Object-Relational Mapping",
+                subtitle: "ORM의 원리, QuerySet과 Instance의 구분, Django Shell을 활용한 CRUD 조작",
+                objectives: [
+                    "ORM(Object-Relational Mapping)이 파이썬 객체와 DB 테이블을 어떻게 연결하는지 설명할 수 있다.",
+                    "Model.objects(Manager)를 통해 QuerySet(복수 컬렉션)과 단일 모델 인스턴스를 구분할 수 있다.",
+                    "Django Shell 환경에서 데이터를 생성(save/create), 조회(all/filter/get), 수정, 삭제(delete)할 수 있다.",
+                    "get()과 filter()의 차이점 및 Field Lookups(__contains, __gt 등)를 활용할 수 있다."
+                ],
+                concepts: [
+                    {
+                        badge: "핵심 개념 1",
+                        title: "ORM (Object-Relational Mapping) & QuerySet API",
+                        desc: "SQL을 직접 작성하지 않고도 파이썬의 객체(Object) 지향 문법을 사용해 관계형 데이터베이스(RDBMS)를 조작하는 기술입니다. `Article.objects.all()`처럼 Model 클래스의 Manager(`objects`)를 통해 쿼리를 전송합니다.",
+                        points: [
+                            "QuerySet: DB에서 전달받은 객체들의 목록(순회 가능한 컬렉션). `all()`, `filter()` 등이 반환함",
+                            "Instance (단일 객체): 테이블의 단일 행(row)에 해당. `get()`이 반환함",
+                            "get() 사용 시 주의점: 조건에 맞는 데이터가 없으면 `DoesNotExist` 예외, 2개 이상이면 `MultipleObjectsReturned` 예외가 발생하므로 PK 조회 등 고유한 값 조회에만 사용!"
+                        ],
+                        codeTitle: "QuerySet API 기본 구문 구조",
+                        code: `# 구문 구조: ModelClass . Manager . QuerySetAPI
+Article.objects.all()
+
+# Django Shell 실행을 위한 패키지 설치 및 실행
+$ pip install ipython django-extensions
+# (settings.py의 INSTALLED_APPS에 'django_extensions' 등록 후)
+$ python manage.py shell_plus`
+                    },
+                    {
+                        badge: "핵심 개념 2",
+                        title: "ORM CRUD (Create, Read, Update, Delete) 4대 작업",
+                        desc: "데이터 생성 시 인스턴스를 만든 후 반드시 `save()` 메서드를 호출해야 실제 DB에 반영되어 PK(id)가 부여됩니다. 수정 또한 기존 객체를 조회한 뒤 속성값을 바꾸고 `save()`를 호출합니다.",
+                        points: [
+                            "Create (생성): 인스턴스 생성 후 `.save()` 호출 (또는 `Article.objects.create()` 사용)",
+                            "Read (조회): 전체 조회 `all()`, 조건 필터링 `filter()`, 단일 객체 조회 `get(pk=1)`",
+                            "Update (수정): `article = Article.objects.get(pk=1)` 조회 → `article.title = '새 제목'` → `article.save()`",
+                            "Delete (삭제): `article = Article.objects.get(pk=1)` 조회 → `article.delete()`"
+                        ],
+                        codeTitle: "Django Shell에서의 CRUD 전체 흐름",
+                        code: `# [1. Create] 인스턴스 생성 후 save() 호출 전까지는 id가 None!
+article = Article(title='first', content='django!')
+article.save() # 이 시점에 DB에 저장되며 article.id (또는 article.pk)가 1로 생성됨
+
+# [2. Read] 조회
+articles = Article.objects.all()          # <QuerySet [<Article: Article object (1)>]>
+filtered = Article.objects.filter(pk=1)   # 조건 만족하는 QuerySet 반환
+one_art = Article.objects.get(pk=1)       # 단일 Article 인스턴스 반환
+
+# [3. Update] 조회 후 값 변경 및 재저장
+article = Article.objects.get(pk=1)
+article.title = 'updated title'
+article.save()
+
+# [4. Delete] 조회 후 삭제
+article = Article.objects.get(pk=1)
+article.delete()`
+                    }
+                ],
+                labType: "orm_shell",
+                quiz: [
+                    {
+                        q: "Q1. `article = Article(title='hello', content='world')` 코드를 실행한 직후(아직 다른 메서드를 호출하지 않음) `article.pk`를 출력했을 때 나오는 값과 실제 DB 반영을 위해 호출해야 하는 메서드는?",
+                        options: [
+                            "1 / article.commit()",
+                            "None / article.save()",
+                            "0 / article.migrate()",
+                            "None / Article.create()"
+                        ],
+                        answer: 1,
+                        explanation: "인스턴스만 생성한 상태에서는 아직 DB에 저장되지 않았으므로 `pk`(`id`)는 `None`입니다. `article.save()`를 호출해야 DB에 INSERT되고 `pk`가 부여됩니다."
+                    },
+                    {
+                        q: "Q2. `Article.objects.get()` 메서드에 대한 설명으로 **틀린** 것은?",
+                        options: [
+                            "단일 모델 인스턴스 객체를 반환한다.",
+                            "조회 결과가 없으면 DoesNotExist 예외가 발생한다.",
+                            "조회 결과가 2개 이상이면 첫 번째 객체만 안전하게 반환한다.",
+                            "고유성(uniqueness)을 보장하는 PK(Primary Key) 조회에 주로 사용한다."
+                        ],
+                        answer: 2,
+                        explanation: "`get()`은 결과가 2개 이상일 때 `MultipleObjectsReturned` 예외를 발생시킵니다. 여러 개가 나올 수 있는 조건에는 `filter()`를 써야 합니다."
+                    },
+                    {
+                        q: "Q3. 기존 게시글(pk=1)의 제목을 수정하려고 할 때 올바른 ORM 코드 순서는?",
+                        options: [
+                            "Article.objects.update(pk=1, title='new')",
+                            "article = Article.objects.get(pk=1) → article.title = 'new' → article.save()",
+                            "article = Article(pk=1) → article.save('new')",
+                            "Article.objects.filter(pk=1).save(title='new')"
+                        ],
+                        answer: 1,
+                        explanation: "특정 인스턴스를 `get(pk=1)`으로 조회한 뒤, 인스턴스 변수를 변경하고 `.save()`를 호출하면 UPDATE 쿼리가 실행됩니다."
+                    }
+                ]
+            },
+            {
+                id: 5,
+                stepNum: "STEP 05",
+                title: "ORM with View (게시판 CRUD 구현)",
+                topicTag: "CRUD Views & HTTP Methods",
+                subtitle: "View에서 ORM 활용하기, HTTP Method (GET vs POST), CSRF 보안 토큰, render vs redirect",
+                objectives: [
+                    "전체 게시글 조회(index)와 단일 게시글 상세 조회(detail) View를 작성할 수 있다.",
+                    "게시글 작성 시 new(입력 화면 렌더링, GET)와 create(DB 저장, POST)를 구분하여 구현할 수 있다.",
+                    "POST 요청 시 {% csrf_token %}이 필요한 이유와 데이터 변경 후 redirect()를 사용하는 이유를 설명할 수 있다.",
+                    "게시글 삭제(delete) 및 수정(edit + update) 기능을 완성하여 전체 CRUD 사이클을 구축할 수 있다."
+                ],
+                concepts: [
+                    {
+                        badge: "핵심 개념 1",
+                        title: "Read (index & detail) 와 Create (new & create)",
+                        desc: "Shell에서 연습한 ORM 코드를 실제 `views.py` 함수 내부에 결합합니다. 데이터 조회에는 GET 방식을, DB의 상태를 변경(생성/수정/삭제)하는 요청에는 반드시 **POST** 방식을 사용합니다.",
+                        points: [
+                            "index(전체 조회): `Article.objects.all()`로 조회하여 context에 담아 `render()`",
+                            "detail(상세 조회): URL의 Variable Routing(`<int:pk>`)으로 받은 pk를 이용해 `Article.objects.get(pk=pk)` 조회",
+                            "GET vs POST: GET은 데이터를 조회(URL 쿼리스트링 노출)할 때, POST는 DB에 변화를 주는 작업(HTTP Body에 숨겨 전송)에 사용",
+                            "CSRF(Cross-Site Request Forgery) 방어: POST 요청 form 내부에는 반드시 `{% csrf_token %}` 태그를 포함해야 403 Forbidden 에러가 나지 않습니다.",
+                            "render() vs redirect(): POST로 글을 저장한 뒤 `render()`를 쓰면 새로고침 시 글이 중복 생성됩니다. 따라서 저장 후에는 상세 페이지나 목록 페이지로 `redirect()`(재요청 지시) 해야 합니다."
+                        ],
+                        codeTitle: "articles/views.py - Read & Create 핵심 코드",
+                        code: `from django.shortcuts import render, redirect
+from .models import Article
+
+# 1. 전체 조회 & 상세 조회 (Read)
+def index(request):
+    articles = Article.objects.all()
+    return render(request, 'articles/index.html', {'articles': articles})
+
+def detail(request, pk):
+    article = Article.objects.get(pk=pk)
+    return render(request, 'articles/detail.html', {'article': article})
+
+# 2. 게시글 생성 (Create: new + create)
+def new(request):
+    return render(request, 'articles/new.html')
+
+def create(request):
+    title = request.POST.get('title')
+    content = request.POST.get('content')
+    article = Article(title=title, content=content)
+    article.save()
+    # 저장 후 생성된 게시글의 상세 페이지로 리다이렉트!
+    return redirect('articles:detail', article.pk)`
+                    },
+                    {
+                        badge: "핵심 개념 2",
+                        title: "Delete (삭제) & Update (edit + update)",
+                        desc: "삭제(delete)와 수정(update) 모두 대상 게시글의 `pk`를 Variable Routing으로 전달받아 먼저 `Article.objects.get(pk=pk)`로 조회한 뒤 작업을 수행합니다.",
+                        points: [
+                            "delete(삭제): POST 요청으로 처리하며, `article.delete()` 실행 후 `redirect('articles:index')`로 목록 이동",
+                            "edit(수정 폼 화면): 기존 데이터가 채워진 입력 폼을 보여줘야 하므로 `article`을 조회해 템플릿의 `<input value='{{ article.title }}'>`에 전달",
+                            "update(수정 반영): POST로 전달받은 새 데이터를 기존 `article.title`, `article.content`에 덮어씌운 뒤 `article.save()` 호출 후 상세 페이지로 `redirect`"
+                        ],
+                        codeTitle: "articles/views.py - Delete & Update 핵심 코드",
+                        code: `# 3. 게시글 삭제 (Delete)
+def delete(request, pk):
+    article = Article.objects.get(pk=pk)
+    article.delete()
+    return redirect('articles:index')
+
+# 4. 게시글 수정 (Update: edit + update)
+def edit(request, pk):
+    article = Article.objects.get(pk=pk)
+    return render(request, 'articles/edit.html', {'article': article})
+
+def update(request, pk):
+    article = Article.objects.get(pk=pk)
+    article.title = request.POST.get('title')
+    article.content = request.POST.get('content')
+    article.save()
+    return redirect('articles:detail', article.pk)`
+                    }
+                ],
+                labType: "crud_simulator",
+                quiz: [
+                    {
+                        q: "Q1. Django에서 POST 방식으로 `<form>` 데이터를 전송할 때 CSRF 공격을 방어하기 위해 `<form>` 태그 내부에 필수로 작성해야 하는 템플릿 태그는?",
+                        options: [
+                            "{% post_token %}",
+                            "{% csrf_token %}",
+                            "{% security_token %}",
+                            "{{ request.csrf }}"
+                        ],
+                        answer: 1,
+                        explanation: "`{% csrf_token %}` 태그가 없으면 Django는 보안을 위해 POST 요청을 거부하고 `403 Forbidden (CSRF verification failed)` 응답을 반환합니다."
+                    },
+                    {
+                        q: "Q2. `create` 뷰 함수에서 게시글을 DB에 `save()`한 직후 `render()` 대신 `redirect('articles:detail', article.pk)`를 반환하는 가장 핵심적인 이유는?",
+                        options: [
+                            "render() 함수는 POST 함수 안에서 문법적으로 호출할 수 없기 때문에",
+                            "사용자가 브라우저에서 새로고침을 눌렀을 때 동일한 POST 요청이 중복 전송되는 것을 막고 상세 페이지(GET)로 이동시키기 위해",
+                            "redirect()를 써야만 db.sqlite3 파일이 저장되기 때문에",
+                            "템플릿 파일을 삭제하기 위해서"
+                        ],
+                        answer: 1,
+                        explanation: "POST 요청에 대한 응답으로 `redirect()`를 반환하면 클라이언트가 새로운 GET 요청을 보내게 되어, 새로고침 시 게시글이 중복 생성되는 문제(PRG 패턴)를 해결합니다."
+                    },
+                    {
+                        q: "Q3. 게시글을 생성, 수정, 삭제하는 요청에 GET 대신 **POST** HTTP 메서드를 사용해야 하는 이유는?",
+                        options: [
+                            "GET 요청은 속도가 느리기 때문에",
+                            "DB에 변화를 주는(상태를 변경하는) 작업이며, URL에 데이터가 노출되거나 단순 링크 클릭으로 데이터가 조작되는 것을 방지하기 위해",
+                            "Django가 GET 요청을 지원하지 않기 때문에",
+                            "POST 요청은 URL 길이가 짧아지기 때문에"
+                        ],
+                        answer: 1,
+                        explanation: "GET은 데이터 조회(멱등성)에만 사용하고, 서버의 DB 상태를 생성/수정/삭제하는 작업은 반드시 POST를 사용해야 안전합니다."
+                    }
+                ]
+            },
+            {
+                id: 6,
+                stepNum: "STEP 06",
+                title: "Django Form & ModelForm",
+                topicTag: "Validation & ModelForm",
+                subtitle: "유효성 검사(Validation) 자동화, Form vs ModelForm, instance 인자 활용, 단일 뷰 함수(create/update) 통합",
+                objectives: [
+                    "사용자의 입력값을 신뢰하지 않고 유효성 검사(is_valid)를 자동화하는 Django Form의 역할을 이해한다.",
+                    "일반 Form(forms.Form)과 Model과 연동되는 ModelForm(forms.ModelForm)의 차이를 구분할 수 있다.",
+                    "ModelForm의 Meta 클래스(model, fields, exclude) 작성법을 익히고 save() 메서드를 활용할 수 있다.",
+                    "request.method 분기('POST' vs 'GET')를 통해 new+create를 하나의 create 뷰로, edit+update를 하나의 update 뷰로 통합할 수 있다."
+                ],
+                concepts: [
+                    {
+                        badge: "핵심 개념 1",
+                        title: "Form vs ModelForm 그리고 Meta 클래스",
+                        desc: "HTML `<input>` 태그를 일일이 작성하고 백엔드에서 빈 값이나 길이 제한을 수동 검증하는 것은 매우 번거롭습니다. Django Form은 입력 UI 생성과 유효성 검증(`is_valid()`)을 한 번에 해결합니다.",
+                        points: [
+                            "forms.Form: DB 모델과 직접 연결되지 않는 입력(예: 로그인, 검색창 등)에 사용",
+                            "forms.ModelForm: Model 클래스(`Article`)의 필드 정의를 그대로 읽어와 중복 코드 없이 입력 폼을 자동 생성하고 `.save()`까지 제공!",
+                            "class Meta: ModelForm 내부에서 어떤 모델(`model = Article`)의 어떤 필드(`fields = '__all__'` 또는 `exclude = ('title',)` 등)를 폼으로 만들지 메타데이터를 선언하는 클래스",
+                            "생성 vs 수정 구분 열쇠: `ArticleForm(request.POST)`는 새 글 생성(INSERT), `ArticleForm(request.POST, instance=article)`처럼 기존 객체를 `instance` 인자로 넣으면 기존 글 수정(UPDATE)으로 동작합니다!"
+                        ],
+                        codeTitle: "articles/forms.py - ModelForm 정의",
+                        code: `# articles/forms.py
+from django import forms
+from .models import Article
+
+class ArticleForm(forms.ModelForm):
+    # ModelForm의 정보를 작성하는 내부 Meta 클래스
+    class Meta:
+        model = Article
+        fields = '__all__'
+        # 또는 특정 필드만 선택: fields = ('title', 'content',)
+        # 또는 특정 필드 제외: exclude = ('title',)`
+                    },
+                    {
+                        badge: "핵심 개념 2",
+                        title: "HTTP Method 분기를 통한 create & update 뷰 함수 통합",
+                        desc: "ModelForm과 `request.method == 'POST'` 조건문을 활용하면 기존에 `new` + `create`로 나뉘어 있던 2개의 함수를 하나의 `create` 함수로, `edit` + `update`를 하나의 `update` 함수로 깔끔하게 통합할 수 있습니다.",
+                        points: [
+                            "1. POST 요청일 때: 데이터를 채운 폼 생성 → `if form.is_valid():` 통과 시 `form.save()` 후 `redirect()`",
+                            "2. 유효성 검사 실패 시: 에러 메시지가 담긴 `form` 객체를 그대로 아래의 `render()`로 내려보내 사용자에게 왜 실패했는지 화면에 표시!",
+                            "3. GET 요청(else)일 때: 빈 폼 `ArticleForm()` (수정 시에는 `ArticleForm(instance=article)`)을 생성하여 `render()`로 공유"
+                        ],
+                        codeTitle: "articles/views.py - 통합된 create & update 표준 패턴",
+                        code: `from django.shortcuts import render, redirect
+from .models import Article
+from .forms import ArticleForm
+
+def create(request):
+    if request.method == 'POST':
+        form = ArticleForm(request.POST)
+        if form.is_valid(): # 유효성 검사 통과 시
+            article = form.save() # 생성된 객체를 반환함
+            return redirect('articles:detail', article.pk)
+    else: # GET 요청일 때
+        form = ArticleForm()
+    # GET 요청이거나, POST에서 is_valid()를 통과하지 못했을 때(에러 메시지 포함) 모두 실행!
+    context = {'form': form}
+    return render(request, 'articles/create.html', context)
+
+def update(request, pk):
+    article = Article.objects.get(pk=pk)
+    if request.method == 'POST':
+        # ★ 수정 시에는 반드시 instance=article 전달!
+        form = ArticleForm(request.POST, instance=article)
+        if form.is_valid():
+            form.save()
+            return redirect('articles:detail', article.pk)
+    else:
+        form = ArticleForm(instance=article)
+    context = {'article': article, 'form': form}
+    return render(request, 'articles/update.html', context)`
+                    }
+                ],
+                labType: "modelform_inspector",
+                quiz: [
+                    {
+                        q: "Q1. `ModelForm`을 사용하여 기존 게시글(`article`)을 수정(Update)하려고 할 때, 새 게시글이 중복 생성되지 않도록 `ArticleForm`에 반드시 함께 전달해야 하는 키워드 인자는?",
+                        options: [
+                            "pk=article.pk",
+                            "instance=article",
+                            "update=True",
+                            "model=article"
+                        ],
+                        answer: 1,
+                        explanation: "`ArticleForm(request.POST, instance=article)`처럼 `instance` 인자에 기존 객체를 전달해야 새 행을 INSERT하지 않고 기존 행을 UPDATE합니다."
+                    },
+                    {
+                        q: "Q2. `ModelForm` 내부에서 참조할 모델(`model`)과 출력할 필드(`fields`)를 지정하기 위해 선언하는 내부 클래스의 이름은?",
+                        options: [
+                            "class Config:",
+                            "class Options:",
+                            "class Meta:",
+                            "class FieldSet:"
+                        ],
+                        answer: 2,
+                        explanation: "ModelForm의 설계 정보(메타데이터)는 반드시 `class Meta:` 내부에 `model`과 `fields`(또는 `exclude`) 속성으로 정의합니다."
+                    },
+                    {
+                        q: "Q3. 통합된 `create` 뷰 함수에서 `context = {'form': form}`과 `return render(...)`가 `else:` 블록 안이 아니라 `if/else` 문 바깥(동일 선상)에 위치하는 이유는?",
+                        options: [
+                            "파이썬 문법상 else 안에서는 render를 쓸 수 없어서",
+                            "POST 요청에서 form.is_valid()가 False(유효성 검사 실패)일 때 에러 메시지가 담긴 form을 다시 템플릿에 렌더링해주기 위해",
+                            "무조건 GET 요청만 처리하기 위해",
+                            "자동으로 redirect를 실행하기 위해"
+                        ],
+                        answer: 1,
+                        explanation: "`is_valid()`가 `False`일 때 `if` 블록을 빠져나오게 되며, 이때 에러 정보를 품고 있는 `form`을 그대로 하단의 `render()`로 전달해 사용자에게 오류 원인을 보여줍니다."
+                    }
+                ]
+            },
+            {
+                id: 7,
+                stepNum: "STEP 07",
+                title: "Django Static Files & Media Files",
+                topicTag: "Static & Media Assets",
+                subtitle: "정적 파일(Static Files: CSS/JS/Img) 경로 설정, {% load static %}, 사용자 업로드 파일(Media Files)과 ImageField",
+                objectives: [
+                    "서버가 미리 준비해 둔 정적 파일(Static Files)과 사용자가 업로드하는 미디어 파일(Media Files)의 차이를 구분할 수 있다.",
+                    "앱 내부 static 기본 경로(app_name/static/app_name/)와 추가 경로(STATICFILES_DIRS)를 설정하고 {% static %} 태그로 불러올 수 있다.",
+                    "ImageField 사용을 위한 Pillow 설치, MEDIA_ROOT와 MEDIA_URL 설정 및 urls.py 구성을 완료할 수 있다.",
+                    "파일 업로드 시 HTML form의 enctype='multipart/form-data'와 View의 request.FILES를 빠짐없이 작성할 수 있다."
+                ],
+                concepts: [
+                    {
+                        badge: "핵심 개념 1",
+                        title: "Static Files (정적 파일) 기본 경로와 추가 경로",
+                        desc: "이미지, CSS, JS처럼 서버 측에서 미리 준비하여 응답할 때 고정된 내용으로 제공되는 파일입니다. 템플릿 상단에 `{% load static %}`을 선언한 후 `{% static '경로' %}` 태그로 참조합니다.",
+                        points: [
+                            "1. 기본 경로: `app폴더/static/app이름/` (예: `articles/static/articles/sample.png` → 템플릿과 마찬가지로 이름 공간 충돌 방지를 위해 앱 이름 폴더를 한 번 더 만듦)",
+                            "2. 추가 경로 (`STATICFILES_DIRS`): 프로젝트 전역에서 쓰는 정적 파일 폴더(예: `BASE_DIR / 'static'`)를 `settings.py`의 `STATICFILES_DIRS` 리스트에 등록",
+                            "STATIC_URL: 정적 파일을 제공할 때 사용할 웹 URL 접두사 (기본값: `'static/'`). 실제 파일 위치가 아니라 브라우저가 요청하는 URL 주소입니다."
+                        ],
+                        codeTitle: "settings.py 정적 파일 설정 및 템플릿 사용법",
+                        code: `# 1. firstpjt/settings.py
+STATIC_URL = 'static/'
+# 추가 경로 지정 시
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+<!-- 2. articles/templates/articles/index.html -->
+{% extends "base.html" %}
+{% load static %} <!-- ★ static 태그 사용 전 반드시 로드! -->
+
+{% block content %}
+  <!-- 실제 위치: articles/static/articles/sample-1.png -->
+  <img src="{% static 'articles/sample-1.png' %}" alt="샘플 이미지">
+{% endblock content %}`
+                    },
+                    {
+                        badge: "핵심 개념 2",
+                        title: "Media Files (사용자 업로드 파일) & ImageField 5단계 공식",
+                        desc: "사용자가 웹에서 직접 업로드하는 파일(Media Files)을 다루려면 `ImageField`를 사용합니다. DB에는 이미지 파일 자체가 아니라 **'파일의 저장 경로(문자열)'**만 저장되며, 실제 파일은 `MEDIA_ROOT` 폴더에 저장됩니다.",
+                        points: [
+                            "필수 1: `pip install pillow` 설치 후 `models.py`에 `image = models.ImageField(blank=True)` 추가 및 마이그레이션",
+                            "필수 2: `settings.py`에 `MEDIA_ROOT = BASE_DIR / 'media'` (실제 파일 보관소) 및 `MEDIA_URL = 'media/'` (웹 주소) 설정",
+                            "필수 3: 프로젝트 `urls.py`에 `+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)` 연결",
+                            "필수 4: 템플릿 `<form>` 태그에 `enctype=\"multipart/form-data\"` 속성 추가 (누락 시 파일 데이터 전송 불가!)",
+                            "필수 5: `views.py`의 ModelForm에 `ArticleForm(request.POST, request.FILES)` 처럼 두 번째 인자로 `request.FILES` 전달!"
+                        ],
+                        codeTitle: "Media 파일 업로드 완벽 설정 코드",
+                        code: `# 1. settings.py
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = 'media/'
+
+# 2. firstpjt/urls.py (업로드된 파일에 URL로 접근 가능하도록 설정)
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('articles/', include('articles.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+<!-- 3. create.html (enctype 속성 필수!) -->
+<form action="{% url 'articles:create' %}" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="업로드">
+</form>
+
+# 4. articles/views.py (request.FILES 수신 필수!)
+form = ArticleForm(request.POST, request.FILES)
+
+<!-- 5. detail.html (이미지가 있을 때만 article.image.url 출력) -->
+{% if article.image %}
+  <img src="{{ article.image.url }}" alt="{{ article.image }}">
+{% endif %}`
+                    }
+                ],
+                labType: "static_media_checker",
+                quiz: [
+                    {
+                        q: "Q1. Django 템플릿에서 `{% static '...' %}` 태그를 사용하기 위해 템플릿 상단에 필수로 작성해야 하는 태그는?",
+                        options: [
+                            "{% import static %}",
+                            "{% load static %}",
+                            "{% include static %}",
+                            "{% use staticfiles %}"
+                        ],
+                        answer: 1,
+                        explanation: "내장 템플릿 태그인 `{% static %}`을 활성화하려면 먼저 `{% load static %}`을 선언해야 합니다."
+                    },
+                    {
+                        q: "Q2. 사용자가 이미지를 업로드할 수 있도록 `<form>` 태그에 반드시 추가해야 하는 속성(1)과, `views.py`의 `ArticleForm(request.POST, ...)`에 추가로 전달해야 하는 인자(2)는?",
+                        options: [
+                            "(1) method='FILE' / (2) request.IMAGES",
+                            "(1) enctype='multipart/form-data' / (2) request.FILES",
+                            "(1) enctype='application/json' / (2) request.MEDIA",
+                            "(1) type='image' / (2) request.POST"
+                        ],
+                        answer: 1,
+                        explanation: "파일이나 이미지는 일반 텍스트와 달리 `<form enctype='multipart/form-data'>`로 전송해야 하며, Django에서는 `request.FILES` 딕셔너리로 들어오므로 ModelForm에 함께 넘겨주어야 합니다."
+                    },
+                    {
+                        q: "Q3. `models.ImageField()`를 사용했을 때 실제 데이터베이스(`db.sqlite3`) 테이블 컬럼에 저장되는 데이터는 무엇인가?",
+                        options: [
+                            "이미지 바이너리 원본 파일 전체",
+                            "MEDIA_ROOT 기준 이미지 파일의 경로 문자열 (예: 'sample.png')",
+                            "이미지의 가로/세로 픽셀 크기 숫자",
+                            "Pillow 라이브러리의 소스 코드"
+                        ],
+                        answer: 1,
+                        explanation: "실제 파일은 `MEDIA_ROOT`로 지정한 서버 폴더에 저장되고, 데이터베이스 테이블에는 해당 파일의 경로(문자열, VARCHAR)만 저장되어 성능을 유지합니다."
+                    }
+                ]
+            }
+        ];
+
+        const STATE_KEY = 'django_master_course_progress_v2';
+        let appState = {
+            currentStepId: 1,
+            currentTab: 'concept', // 'concept' | 'lab' | 'quiz'
+            completedSteps: [],    // e.g., [1, 2]
+            sequentialLock: true,  // true = must complete previous step to unlock next
+            quizSelections: {},    // { "1_0": 2, "1_1": 1 }
+            labCompleted: {},      // { 1: true }
+            darkMode: true         // true = dark mode, false = light mode
+        };
+
+        // Virtual DB for Step 4 & Step 5 Labs
+        let virtualArticlesDB = [
+            { id: 1, title: "Django 첫 걸음", content: "MTV 디자인 패턴 완벽 정복!", created_at: "2026-10-19 09:00" },
+            { id: 2, title: "ORM 마스터하기", content: "QuerySet API는 정말 편리하네요.", created_at: "2026-10-20 10:15" }
+        ];
+        let nextVirtualId = 3;
+
+        function highlightVSCode(rawCode, showLineNumbers = true) {
+            const tokenStore = [];
+            const saveToken = (cls, text) => {
+                const idx = tokenStore.length;
+                tokenStore.push(`<span class="${cls}">${text}</span>`);
+                return `@@TOK_${idx}@@`;
+            };
+
+            const lines = String(rawCode).split('\n').map((line, i) => {
+                let s = escapeHtml(line);
+
+                // 1. Full line or trailing comments (# ... or <!-- ... -->)
+                s = s.replace(/(&lt;!--[\s\S]*?--&gt;)/g, (m) => saveToken('tok-com', m));
+                s = s.replace(/(#.*)$/g, (m) => saveToken('tok-com', m));
+
+                // 2. DTL tags {% ... %} and {{ ... }}
+                s = s.replace(/(\{%[\s\S]*?%\}|\{\{[\s\S]*?\}\})/g, (m) => saveToken('tok-dtl', m));
+
+                // 3. Strings ('...' or "...")
+                s = s.replace(/('[^']*'|&quot;[^&]*?&quot;)/g, (m) => saveToken('tok-str', m));
+
+                // 4. HTML tags
+                s = s.replace(/(&lt;\/?[a-zA-Z0-9_-]+|&gt;)/g, (m) => saveToken('tok-tag', m));
+
+                // 5. Shell Prompt ($ or >>>)
+                s = s.replace(/^(\s*)(\$|&gt;&gt;&gt;)(\s+)/, (m, p1, p2, p3) => `${p1}${saveToken('tok-cmd', p2)}${p3}`);
+
+                // 6. Python Keywords & Definitions
+                s = s.replace(/\b(from|import|return|if|elif|else|for|in|as|and|or|not|with)\b/g, (m) => saveToken('tok-kw', m));
+                s = s.replace(/\b(def|class|True|False|None)\b/g, (m) => saveToken('tok-def', m));
+
+                // 7. Common Django/Python Classes
+                s = s.replace(/\b(Article|ArticleForm|Model|ModelForm|Meta|CharField|TextField|DateTimeField|ImageField|IntegerField)\b/g, (m) => saveToken('tok-cls', m));
+
+                // 8. Function calls
+                s = s.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)(?=\()/g, (m) => saveToken('tok-fn', m));
+
+                // 9. Key Django variables / attributes
+                s = s.replace(/\b(request|context|urlpatterns|INSTALLED_APPS|STATIC_URL|STATICFILES_DIRS|MEDIA_ROOT|MEDIA_URL|BASE_DIR|objects|pk|id|title|content|form|article|articles)\b/g, (m) => saveToken('tok-var', m));
+
+                // 10. Numbers
+                s = s.replace(/\b(\d+)\b/g, (m) => saveToken('tok-num', m));
+
+                // Restore tokens (in reverse order in case of nested replacements)
+                for (let t = tokenStore.length - 1; t >= 0; t--) {
+                    s = s.split(`@@TOK_${t}@@`).join(tokenStore[t]);
+                }
+
+                if (!showLineNumbers) {
+                    return `<div class="vscode-line"><span class="vscode-lc">${s || ' '}</span></div>`;
+                }
+                return `<div class="vscode-line"><span class="vscode-ln">${i + 1}</span><span class="vscode-lc">${s || ' '}</span></div>`;
+            });
+
+            return lines.join('');
+        }
+
+        function applyTheme() {
+            const htmlEl = document.documentElement;
+            const icon = document.getElementById('themeToggleIcon');
+            const label = document.getElementById('themeToggleLabel');
+
+            if (appState.darkMode) {
+                htmlEl.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400';
+                if (label) label.textContent = '라이트 모드';
+            } else {
+                htmlEl.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-indigo-600';
+                if (label) label.textContent = '다크 모드';
+            }
+        }
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem(STATE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    appState = { ...appState, ...parsed };
+                }
+            } catch (e) {
+                console.error("State load error:", e);
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STATE_KEY, JSON.stringify({
+                    currentStepId: appState.currentStepId,
+                    completedSteps: appState.completedSteps,
+                    sequentialLock: appState.sequentialLock,
+                    quizSelections: appState.quizSelections,
+                    labCompleted: appState.labCompleted,
+                    darkMode: appState.darkMode
+                }));
+            } catch (e) {
+                console.error("State save error:", e);
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const box = document.getElementById('toastBox');
+            const icon = document.getElementById('toastIcon');
+            const msg = document.getElementById('toastMsg');
+            msg.textContent = message;
+            if (type === 'warn') {
+                icon.className = 'fa-solid fa-lock text-amber-400 text-lg';
+            } else {
+                icon.className = 'fa-solid fa-circle-check text-emerald-400 text-lg';
+            }
+            box.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                box.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function isStepUnlocked(stepId) {
+            if (!appState.sequentialLock) return true;
+            if (stepId === 1) return true;
+            return appState.completedSteps.includes(stepId - 1);
+        }
+
+        function renderSidebarAndHeader() {
+            // Update Top & Mobile Progress
+            const total = CURRICULUM_DATA.length;
+            const doneCount = appState.completedSteps.length;
+            const pct = Math.round((doneCount / total) * 100);
+            document.getElementById('progressText').textContent = `${pct}% (${doneCount}/${total} 완료)`;
+            document.getElementById('progressBar').style.width = `${pct}%`;
+
+            const mobileProgText = document.getElementById('mobileProgressText');
+            const mobileProgBar = document.getElementById('mobileProgressBar');
+            if (mobileProgText) mobileProgText.textContent = `${pct}% (${doneCount}/${total})`;
+            if (mobileProgBar) mobileProgBar.style.width = `${pct}%`;
+
+            // Update Lock Mode Button
+            const lockIcon = document.getElementById('lockModeIcon');
+            const lockLabel = document.getElementById('lockModeLabel');
+            if (appState.sequentialLock) {
+                lockIcon.className = 'fa-solid fa-lock text-amber-400';
+                lockLabel.textContent = '순차 학습 모드 (ON)';
+            } else {
+                lockIcon.className = 'fa-solid fa-lock-open text-emerald-400';
+                lockLabel.textContent = '자유 탐색 모드';
+            }
+
+            // Render Sidebar Steps
+            const navList = document.getElementById('stepNavList');
+            navList.innerHTML = CURRICULUM_DATA.map(step => {
+                const isCompleted = appState.completedSteps.includes(step.id);
+                const unlocked = isStepUnlocked(step.id);
+                const isActive = appState.currentStepId === step.id;
+
+                let statusBadge = '';
+                if (isCompleted) {
+                    statusBadge = `<span class="w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-check"></i></span>`;
+                } else if (unlocked) {
+                    statusBadge = `<span class="w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/40 text-blue-400 flex items-center justify-center text-xs font-bold shrink-0">${step.id}</span>`;
+                } else {
+                    statusBadge = `<span class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 text-slate-500 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-lock"></i></span>`;
+                }
+
+                const activeClasses = isActive
+                    ? 'bg-emerald-950/60 border-emerald-500/60 text-white shadow-lg shadow-emerald-950/50'
+                    : unlocked
+                        ? 'bg-slate-900/60 hover:bg-slate-800/70 border-slate-800 text-slate-300'
+                        : 'bg-slate-900/30 border-slate-800/50 text-slate-500 opacity-65 cursor-not-allowed';
+
+                return `
+                    <button onclick="selectStep(${step.id})" class="w-full text-left p-3 rounded-xl border transition flex items-start gap-3 ${activeClasses}">
+                        ${statusBadge}
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="text-[10px] font-mono uppercase tracking-wider ${isActive ? 'text-emerald-400 font-bold' : 'text-slate-400'}">${step.stepNum}</span>
+                                ${isCompleted ? '<span class="text-[10px] text-emerald-400 font-semibold">CLEAR</span>' : ''}
+                            </div>
+                            <p class="text-sm font-bold truncate mt-0.5">${step.title}</p>
+                            <p class="text-[11px] text-slate-400 truncate mt-0.5">${step.topicTag}</p>
+                        </div>
+                    </button>
+                `;
+            }).join('');
+
+            // Update Step Header Banner
+            const currentStep = CURRICULUM_DATA.find(s => s.id === appState.currentStepId);
+            const isCurrDone = appState.completedSteps.includes(currentStep.id);
+            document.getElementById('stepHeaderBanner').innerHTML = `
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-bold">${currentStep.stepNum}</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 font-mono text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-code text-emerald-400"></i> ${currentStep.topicTag}
+                        </span>
+                    </div>
+                    <div>
+                        ${isCurrDone
+                            ? '<span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold"><i class="fa-solid fa-medal mr-1"></i>학습 완료됨</span>'
+                            : '<span class="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-semibold"><i class="fa-solid fa-hourglass-half mr-1"></i>학습 진행 중</span>'
+                        }
+                    </div>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">${currentStep.title}</h2>
+                <p class="text-sm text-slate-300 mt-1.5">${currentStep.subtitle}</p>
+                <div class="mt-4 pt-4 border-t border-slate-800/80">
+                    <p class="text-xs font-bold text-emerald-400 mb-2"><i class="fa-solid fa-bullseye mr-1.5"></i>이번 단계 학습 목표</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                        ${currentStep.objectives.map(obj => `
+                            <div class="flex items-start gap-2 text-xs text-slate-300">
+                                <i class="fa-solid fa-check text-emerald-500 mt-0.5 shrink-0"></i>
+                                <span>${obj}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Update Sub-navigation Tab Buttons
+            document.querySelectorAll('.step-tab-btn').forEach(btn => {
+                const tab = btn.getAttribute('data-tab');
+                if (tab === appState.currentTab) {
+                    btn.className = 'step-tab-btn px-2.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 bg-emerald-600 text-white keep-white shadow-lg shadow-emerald-900/30';
+                } else {
+                    btn.className = 'step-tab-btn px-2.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 bg-slate-900 text-slate-400 hover:text-white border border-slate-800';
+                }
+            });
+
+            // Update Bottom Prev/Next Buttons
+            const prevBtn = document.getElementById('prevStepBtn');
+            const nextBtn = document.getElementById('nextStepBtn');
+            prevBtn.disabled = appState.currentStepId <= 1;
+            nextBtn.disabled = appState.currentStepId >= CURRICULUM_DATA.length;
+            document.getElementById('bottomStepIndicator').textContent = `Step ${appState.currentStepId} / ${CURRICULUM_DATA.length}`;
+        }
+
+        function renderConceptTab(step) {
+            return `
+                <div class="space-y-5 sm:space-y-6">
+                    ${step.concepts.map((c, idx) => `
+                        <div class="rounded-2xl bg-slate-900/90 border border-slate-800 p-4 sm:p-6 shadow-lg">
+                            <div class="flex flex-wrap items-center gap-2 mb-2">
+                                <span class="px-2.5 py-0.5 rounded-md bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs font-bold shrink-0">${c.badge}</span>
+                                <h3 class="text-base sm:text-lg font-bold text-white">${c.title}</h3>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">${c.desc}</p>
+                            
+                            <div class="bg-slate-950/70 rounded-xl p-3.5 sm:p-4 border border-slate-800/80 mb-4 sm:mb-5 space-y-2">
+                                ${c.points.map(pt => `
+                                    <div class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 sm:mt-2 shrink-0"></span>
+                                        <span class="leading-relaxed break-words">${pt}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <div class="rounded-xl overflow-hidden vscode-editor shadow-xl">
+                                <div class="flex items-center justify-between gap-2 px-3 sm:px-4 py-2.5 vscode-header">
+                                    <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                                        <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f56] shrink-0"></span>
+                                        <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ffbd2e] shrink-0"></span>
+                                        <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27c93f] shrink-0"></span>
+                                        <span class="text-[11px] sm:text-xs font-mono text-gray-300 ml-1 sm:ml-2 font-semibold flex items-center gap-1.5 truncate">
+                                            <i class="fa-solid fa-file-code text-sky-400 shrink-0"></i>
+                                            <span class="truncate">${c.codeTitle}</span>
+                                        </span>
+                                    </div>
+                                    <button onclick="copyCodeBlock(${idx})" class="text-[11px] sm:text-xs px-2.5 py-1 rounded bg-[#333333] hover:bg-[#444444] text-gray-200 keep-white transition flex items-center gap-1.5 shrink-0">
+                                        <i class="fa-regular fa-copy"></i> <span>복사</span>
+                                    </button>
+                                </div>
+                                <textarea id="rawCode_${idx}" class="hidden">${escapeHtml(c.code)}</textarea>
+                                <div class="p-3 sm:p-4 text-[11px] sm:text-sm vscode-code overflow-x-auto">${highlightVSCode(c.code, true)}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+
+                    <div class="cta-banner rounded-2xl bg-gradient-to-r from-emerald-950/60 to-slate-900 border border-emerald-500/30 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                        <div>
+                            <h4 class="font-bold text-white text-sm sm:text-base">개념 학습을 마치셨나요?</h4>
+                            <p class="text-xs text-slate-300 mt-0.5">인터랙티브 실습실에서 직접 동작 원리를 체험해 보세요!</p>
+                        </div>
+                        <button onclick="switchTab('lab')" class="w-full sm:w-auto justify-center px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white keep-white text-xs sm:text-sm font-bold transition flex items-center gap-2 shadow-lg shrink-0">
+                            <span>2. 인터랙티브 실습실로 이동</span> <i class="fa-solid fa-flask"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderLabTab(step) {
+            let labHtml = '';
+
+            if (step.labType === 'mtv_flow') {
+                labHtml = `
+                    <div class="rounded-2xl bg-slate-900 border border-slate-800 p-4 sm:p-6 space-y-5 sm:space-y-6">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-4">
+                            <div>
+                                <span class="text-xs font-bold text-emerald-400 uppercase">Interactive Lab 01</span>
+                                <h3 class="text-base sm:text-lg font-bold text-white">Django MTV 요청-응답 흐름 시뮬레이터</h3>
+                                <p class="text-xs text-slate-400 mt-0.5">아래 단계 버튼을 순서대로 클릭하여 클라이언트의 HTTP 요청이 Django 내부에서 어떻게 처리되는지 확인하세요.</p>
+                            </div>
+                            <button onclick="runMtvStep(0)" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">전체 요약 보기</button>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="mtvFlowButtons">
+                            <button onclick="runMtvStep(1)" data-mtv-step="1" class="mtv-btn p-3 rounded-xl border border-emerald-500 bg-emerald-950/40 text-left transition">
+                                <div class="text-[11px] font-mono text-emerald-400 font-bold">STEP 1</div>
+                                <div class="font-bold text-xs sm:text-sm text-white mt-0.5">Client 요청</div>
+                            </button>
+                            <button onclick="runMtvStep(2)" data-mtv-step="2" class="mtv-btn p-3 rounded-xl border border-slate-800 bg-slate-950 text-left transition hover:border-slate-700">
+                                <div class="text-[11px] font-mono text-slate-400">STEP 2</div>
+                                <div class="font-bold text-xs sm:text-sm text-white mt-0.5">urls.py</div>
+                            </button>
+                            <button onclick="runMtvStep(3)" data-mtv-step="3" class="mtv-btn p-3 rounded-xl border border-slate-800 bg-slate-950 text-left transition hover:border-slate-700">
+                                <div class="text-[11px] font-mono text-slate-400">STEP 3</div>
+                                <div class="font-bold text-xs sm:text-sm text-white mt-0.5">views.py (View)</div>
+                            </button>
+                            <button onclick="runMtvStep(4)" data-mtv-step="4" class="mtv-btn p-3 rounded-xl border border-slate-800 bg-slate-950 text-left transition hover:border-slate-700">
+                                <div class="text-[11px] font-mono text-slate-400">STEP 4</div>
+                                <div class="font-bold text-xs sm:text-sm text-white mt-0.5">models.py (DB)</div>
+                            </button>
+                            <button onclick="runMtvStep(5)" data-mtv-step="5" class="mtv-btn col-span-2 sm:col-span-1 p-3 rounded-xl border border-slate-800 bg-slate-950 text-left transition hover:border-slate-700">
+                                <div class="text-[11px] font-mono text-slate-400">STEP 5</div>
+                                <div class="font-bold text-xs sm:text-sm text-white mt-0.5">Template 응답</div>
+                            </button>
+                        </div>
+
+                        <div id="mtvStageDisplay" class="rounded-xl bg-slate-950 border border-slate-800 p-4 sm:p-5 min-h-[180px] flex flex-col justify-between">
+                            <!-- Updated by runMtvStep() -->
+                        </div>
+                    </div>
+                `;
+            } else if (step.labType === 'dtl_sandbox') {
+                labHtml = `
+                    <div class="rounded-2xl bg-slate-900 border border-slate-800 p-5 sm:p-6 space-y-6">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400 uppercase">Interactive Lab 02</span>
+                            <h3 class="text-lg font-bold text-white">DTL (Django Template Language) 실시간 렌더링 실험실</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">View의 <code class="text-emerald-300">context</code> 데이터를 수정하면 우측의 DTL 템플릿이 어떻게 HTML로 렌더링되는지 즉시 확인합니다.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-4 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                                <h4 class="text-xs font-mono font-bold text-blue-400 uppercase"><i class="fa-brands fa-python mr-1"></i> articles/views.py (Context 조작)</h4>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">context['name'] (문자열 변수)</label>
+                                    <input id="dtlNameInput" type="text" value="파이썬 개발자" oninput="updateDtlPreview()" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-emerald-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">context['menus'] (쉼표로 구분된 리스트)</label>
+                                    <input id="dtlMenusInput" type="text" value="제육볶음, 돈까스, 마라탕, 초밥" oninput="updateDtlPreview()" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-emerald-500">
+                                </div>
+                                <div class="pt-2 border-t border-slate-800 font-mono text-xs text-slate-300 space-y-1">
+                                    <div class="text-slate-500"># 적용된 DTL 템플릿 코드</div>
+                                    <div>&lt;h3&gt;환영합니다, <span class="text-amber-300">{{ name|upper }}</span>님! (글자수: <span class="text-amber-300">{{ name|length }}</span>)&lt;/h3&gt;</div>
+                                    <div><span class="text-emerald-400">{% for menu in menus %}</span></div>
+                                    <div class="pl-4">&lt;li&gt;<span class="text-amber-300">{{ forloop.counter }}</span>번: <span class="text-amber-300">{{ menu }}</span>&lt;/li&gt;</div>
+                                    <div><span class="text-emerald-400">{% empty %}</span> &lt;li&gt;메뉴가 없습니다.&lt;/li&gt;</div>
+                                    <div><span class="text-emerald-400">{% endfor %}</span></div>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col justify-between">
+                                <div>
+                                    <h4 class="text-xs font-mono font-bold text-emerald-400 uppercase mb-3"><i class="fa-solid fa-desktop mr-1"></i> 브라우저 최종 렌더링 결과</h4>
+                                    <div id="dtlBrowserOutput" class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 space-y-3">
+                                        <!-- Rendered via updateDtlPreview -->
+                                    </div>
+                                </div>
+                                <p class="text-[11px] text-slate-500 mt-4">💡 팁: 메뉴 입력창을 모두 지워 <code class="text-emerald-400">{% empty %}</code> 태그가 어떻게 동작하는지 실험해보세요!</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (step.labType === 'model_migration') {
+                labHtml = `
+                    <div class="rounded-2xl bg-slate-900 border border-slate-800 p-5 sm:p-6 space-y-6">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400 uppercase">Interactive Lab 03</span>
+                            <h3 class="text-lg font-bold text-white">Model 클래스 설계 & Migrations 터미널 시뮬레이터</h3>
+                            <p class="text-xs text-slate-400 mt-0.5"><code class="text-emerald-300">models.py</code>에 추가 필드(<code class="text-amber-300">created_at</code>, <code class="text-amber-300">updated_at</code>)를 체크하고 <code class="text-emerald-300">makemigrations</code> → <code class="text-emerald-300">migrate</code>를 순서대로 실행해 보세요.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-mono font-bold text-blue-400"># articles/models.py</span>
+                                    <label class="flex items-center gap-2 text-xs text-emerald-300 cursor-pointer bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-500/40">
+                                        <input id="toggleTimestampFields" type="checkbox" onchange="updateModelLabView()" class="accent-emerald-500">
+                                        <span>추가 필드(created_at, updated_at) 작성하기</span>
+                                    </label>
+                                </div>
+                                <div id="modelLabCodePreview" class="text-xs vscode-editor vscode-code p-3.5 rounded-lg overflow-x-auto"></div>
+                                
+                                <div class="flex flex-wrap gap-2 pt-2">
+                                    <button onclick="runMigrationCmd('makemigrations')" class="flex-1 sm:flex-none px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white keep-white text-xs font-mono font-bold transition">
+                                        $ makemigrations
+                                    </button>
+                                    <button onclick="runMigrationCmd('migrate')" class="flex-1 sm:flex-none px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white keep-white text-xs font-mono font-bold transition">
+                                        $ migrate
+                                    </button>
+                                    <button onclick="runMigrationCmd('showmigrations')" class="w-full sm:w-auto px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono transition">
+                                        $ showmigrations
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col justify-between space-y-4">
+                                <div>
+                                    <h4 class="text-xs font-mono font-bold text-slate-400 uppercase mb-2">가상 터미널 출력 & DB 테이블(articles_article) 구조</h4>
+                                    <pre id="migrationTerminalOut" class="vscode-editor vscode-code text-xs p-3.5 rounded-lg h-36 overflow-y-auto">$ 대기 중... 왼쪽에서 명령어를 클릭하세요.</pre>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-mono text-slate-400 mb-1.5"><i class="fa-solid fa-database text-amber-400 mr-1"></i> db.sqlite3 &gt; articles_article 컬럼 구조</div>
+                                    <div id="sqliteTableCols" class="flex flex-wrap gap-2">
+                                        <!-- Populated dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (step.labType === 'orm_shell') {
+                labHtml = `
+                    <div class="rounded-2xl bg-slate-900 border border-slate-800 p-5 sm:p-6 space-y-6">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400 uppercase">Interactive Lab 04</span>
+                            <h3 class="text-lg font-bold text-white">Django Shell ORM QuerySet 플레이그라운드</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">아래 ORM 명령어 버튼을 클릭하여 파이썬 코드가 가상 <code class="text-emerald-300">db.sqlite3</code> 테이블을 어떻게 조작하는지 실시간으로 확인하세요.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-3">
+                                <div class="text-xs font-bold text-slate-300">실행할 ORM 구문 클릭:</div>
+                                <div class="grid grid-cols-1 gap-2">
+                                    <button onclick="execOrmCmd('all')" class="text-left px-3 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 font-mono text-xs text-emerald-300 transition flex flex-wrap justify-between items-center gap-2">
+                                        <span class="break-all">&gt;&gt;&gt; Article.objects.all()</span>
+                                        <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-400 shrink-0">전체 조회 (QuerySet)</span>
+                                    </button>
+                                    <button onclick="execOrmCmd('create')" class="text-left px-3 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 font-mono text-xs text-blue-300 transition flex flex-wrap justify-between items-center gap-2">
+                                        <span class="break-all">&gt;&gt;&gt; article = Article(title='새 글', content='ORM 실습'); article.save()</span>
+                                        <span class="text-[10px] bg-blue-950 px-2 py-0.5 rounded text-blue-300 shrink-0">생성 (Create)</span>
+                                    </button>
+                                    <button onclick="execOrmCmd('get1')" class="text-left px-3 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 font-mono text-xs text-amber-300 transition flex flex-wrap justify-between items-center gap-2">
+                                        <span class="break-all">&gt;&gt;&gt; Article.objects.get(pk=1)</span>
+                                        <span class="text-[10px] bg-amber-950 px-2 py-0.5 rounded text-amber-300 shrink-0">단일 조회 (Instance)</span>
+                                    </button>
+                                    <button onclick="execOrmCmd('update1')" class="text-left px-3 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 font-mono text-xs text-purple-300 transition flex flex-wrap justify-between items-center gap-2">
+                                        <span class="break-all">&gt;&gt;&gt; a = Article.objects.get(pk=1); a.title = '제목 수정됨!'; a.save()</span>
+                                        <span class="text-[10px] bg-purple-950 px-2 py-0.5 rounded text-purple-300 shrink-0">수정 (Update)</span>
+                                    </button>
+                                    <button onclick="execOrmCmd('deleteLast')" class="text-left px-3 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 font-mono text-xs text-rose-300 transition flex flex-wrap justify-between items-center gap-2">
+                                        <span class="break-all">&gt;&gt;&gt; Article.objects.last().delete()</span>
+                                        <span class="text-[10px] bg-rose-950 px-2 py-0.5 rounded text-rose-300 shrink-0">삭제 (Delete)</span>
+                                    </button>
+                                </div>
+                                <pre id="ormShellOutput" class="vscode-editor vscode-code p-3.5 rounded-xl font-mono text-xs h-28 overflow-y-auto"># Interactive Django Shell 준비 완료</pre>
+                            </div>
+
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-xs font-mono font-bold text-slate-300"><i class="fa-solid fa-table text-emerald-400 mr-1.5"></i>실시간 articles_article 테이블 상태</span>
+                                    <span id="ormRowCount" class="text-xs font-mono text-emerald-400"></span>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left border-collapse text-xs">
+                                        <thead>
+                                            <tr class="border-b border-slate-800 text-slate-400 font-mono">
+                                                <th class="py-2 px-2">id (PK)</th>
+                                                <th class="py-2 px-2">title</th>
+                                                <th class="py-2 px-2">content</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ormTableBody" class="divide-y divide-slate-800/60 font-mono">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (step.labType === 'crud_simulator') {
+                labHtml = `
+                    <div class="rounded-2xl bg-slate-900 border border-slate-800 p-5 sm:p-6 space-y-6">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400 uppercase">Interactive Lab 05</span>
+                            <h3 class="text-lg font-bold text-white">View + ORM 게시판 CRUD & CSRF 시뮬레이터</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">새 게시글을 작성해보고, 만약 <code class="text-rose-400">{% csrf_token %}</code>을 빼먹었을 때 어떤 응답이 오는지 실험해 보세요!</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-mono font-bold text-emerald-400">POST /articles/create/ 요청 보내기</span>
+                                    <label class="flex items-center gap-1.5 text-xs cursor-pointer">
+                                        <input id="csrfCheckToggle" type="checkbox" checked class="accent-emerald-500">
+                                        <span class="font-mono text-amber-300">{% csrf_token %} 포함</span>
+                                    </label>
+                                </div>
+                                <input id="crudTitleInput" type="text" placeholder="게시글 제목 (title)" value="View와 ORM 연동 성공!" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white">
+                                <textarea id="crudContentInput" rows="2" placeholder="게시글 내용 (content)" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white">POST 요청 후에는 반드시 redirect()를 수행합니다.</textarea>
+                                <button onclick="submitVirtualPost()" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">
+                                    POST 전송 및 View 실행
+                                </button>
+                                <div id="crudResponseLog" class="p-3 rounded-lg bg-slate-900 border border-slate-800 font-mono text-xs text-slate-300">
+                                    응답 대기 중...
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                                <span class="text-xs font-mono font-bold text-blue-400">GET /articles/ (현재 게시글 목록)</span>
+                                <div id="crudArticleList" class="space-y-2 max-h-56 overflow-y-auto">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (step.labType === 'modelform_inspector') {
+                labHtml = `
+                    <div class="rounded-2xl bg-slate-900 border border-slate-800 p-5 sm:p-6 space-y-6">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400 uppercase">Interactive Lab 06</span>
+                            <h3 class="text-lg font-bold text-white">ModelForm 유효성 검사(is_valid) & create/update 비교기</h3>
+                            <p class="text-xs text-slate-400 mt-0.5"><code class="text-emerald-300">max_length=10</code> 제약조건이 걸린 <code class="text-amber-300">title</code> 필드에 10글자 이상을 입력하거나 빈칸으로 두어 <code class="text-emerald-300">form.is_valid()</code>의 결과를 테스트해 보세요.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">title 입력 (Model 정의: <code class="text-emerald-300">CharField(max_length=10)</code>)</label>
+                                    <input id="mfTitleInput" type="text" value="안녕하세요" oninput="validateModelFormLab()" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">instance 인자 설정 (생성 vs 수정 구분)</label>
+                                    <select id="mfInstanceSelect" onchange="validateModelFormLab()" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white font-mono">
+                                        <option value="none">form = ArticleForm(request.POST)  # 신규 생성(CREATE)</option>
+                                        <option value="instance">form = ArticleForm(request.POST, instance=article)  # 기존 수정(UPDATE)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="mfValidationResult" class="bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono text-xs space-y-2 flex flex-col justify-center">
+                                <!-- Populated by validateModelFormLab -->
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (step.labType === 'static_media_checker') {
+                labHtml = `
+                    <div class="rounded-2xl bg-slate-900 border border-slate-800 p-5 sm:p-6 space-y-6">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400 uppercase">Interactive Lab 07</span>
+                            <h3 class="text-lg font-bold text-white">Media 파일 이미지 업로드 디버깅 시뮬레이터</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">교육생들이 실습에서 가장 많이 실수하는 4가지 체크포인트를 모두 활성화하여 이미지 업로드를 성공시키세요!</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                                <p class="text-xs font-bold text-slate-300 mb-2">필수 설정 체크리스트 (클릭하여 활성화):</p>
+                                <label class="flex items-center gap-3 p-2.5 rounded-lg bg-slate-900 border border-slate-800 cursor-pointer">
+                                    <input type="checkbox" class="media-chk accent-emerald-500" onchange="checkMediaUploadStatus()" checked>
+                                    <span class="text-xs font-mono text-slate-200">1. <span class="text-emerald-400">pip install pillow</span> 설치 및 마이그레이션 완료</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-2.5 rounded-lg bg-slate-900 border border-slate-800 cursor-pointer">
+                                    <input type="checkbox" class="media-chk accent-emerald-500" onchange="checkMediaUploadStatus()">
+                                    <span class="text-xs font-mono text-slate-200">2. settings.py에 <span class="text-amber-300">MEDIA_ROOT</span> & <span class="text-amber-300">MEDIA_URL</span> 설정</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-2.5 rounded-lg bg-slate-900 border border-slate-800 cursor-pointer">
+                                    <input type="checkbox" class="media-chk accent-emerald-500" onchange="checkMediaUploadStatus()">
+                                    <span class="text-xs font-mono text-slate-200">3. form 태그에 <span class="text-blue-300">enctype="multipart/form-data"</span> 추가</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-2.5 rounded-lg bg-slate-900 border border-slate-800 cursor-pointer">
+                                    <input type="checkbox" class="media-chk accent-emerald-500" onchange="checkMediaUploadStatus()">
+                                    <span class="text-xs font-mono text-slate-200">4. views.py의 ArticleForm에 <span class="text-purple-300">request.FILES</span> 인자 전달</span>
+                                </label>
+                            </div>
+
+                            <div id="mediaStatusPanel" class="bg-slate-950 p-5 rounded-xl border border-slate-800 flex flex-col justify-center">
+                                <!-- Populated by checkMediaUploadStatus -->
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="space-y-5 sm:space-y-6">
+                    ${labHtml}
+                    <div class="cta-banner rounded-2xl bg-gradient-to-r from-emerald-950/60 to-slate-900 border border-emerald-500/30 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                        <div>
+                            <h4 class="font-bold text-white text-sm sm:text-base">실습을 충분히 체험해 보셨나요?</h4>
+                            <p class="text-xs text-slate-300 mt-0.5">마지막 3문항 확인 퀴즈를 통과하면 현재 단계가 완료 처리되고 다음 단계가 잠금 해제됩니다!</p>
+                        </div>
+                        <button onclick="switchTab('quiz')" class="w-full sm:w-auto justify-center px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white keep-white text-xs sm:text-sm font-bold transition flex items-center gap-2 shadow-lg shrink-0">
+                            <span>3. 확인 퀴즈 풀러 가기</span> <i class="fa-solid fa-circle-check"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderQuizTab(step) {
+            const isCompleted = appState.completedSteps.includes(step.id);
+
+            return `
+                <div class="space-y-6">
+                    <div class="rounded-2xl bg-slate-900 border border-slate-800 p-4 sm:p-6">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-5 sm:mb-6 border-b border-slate-800 pb-4">
+                            <div>
+                                <span class="text-xs font-bold text-emerald-400 uppercase">${step.stepNum} 마스터 퀴즈</span>
+                                <h3 class="text-base sm:text-lg font-bold text-white">${step.title} 이해도 점검 (총 3문항)</h3>
+                                <p class="text-xs text-slate-400 mt-0.5">모든 문항의 정답을 선택하고 하단의 <strong>[채점 및 단계 완료]</strong> 버튼을 눌러주세요.</p>
+                            </div>
+                            ${isCompleted ? '<span class="px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold"><i class="fa-solid fa-check-double mr-1"></i>통과 완료!</span>' : ''}
+                        </div>
+
+                        <div class="space-y-4 sm:space-y-6">
+                            ${step.quiz.map((qItem, qIdx) => {
+                                const key = `${step.id}_${qIdx}`;
+                                const selectedOpt = appState.quizSelections[key];
+                                const isCorrect = selectedOpt === qItem.answer;
+
+                                return `
+                                    <div class="p-3.5 sm:p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                                        <p class="font-bold text-xs sm:text-base text-white leading-snug">${qItem.q}</p>
+                                        <div class="grid grid-cols-1 gap-2 pt-1">
+                                            ${qItem.options.map((optText, optIdx) => {
+                                                const isSelected = selectedOpt === optIdx;
+                                                let btnStyle = 'bg-slate-900 hover:bg-slate-800/80 border-slate-800 text-slate-300';
+                                                if (isSelected) {
+                                                    btnStyle = isCorrect
+                                                        ? 'bg-emerald-950/80 border-emerald-500 text-emerald-200 font-semibold'
+                                                        : 'bg-rose-950/80 border-rose-500 text-rose-200 font-semibold';
+                                                }
+                                                return `
+                                                    <button onclick="selectQuizOption(${step.id}, ${qIdx}, ${optIdx})" class="text-left px-3.5 sm:px-4 py-3 rounded-xl border text-xs sm:text-sm transition flex items-center justify-between gap-3 ${btnStyle}">
+                                                        <span class="break-words"><strong class="font-mono mr-1.5 sm:mr-2">${optIdx + 1}.</strong> ${escapeHtml(optText)}</span>
+                                                        ${isSelected ? (isCorrect ? '<i class="fa-solid fa-circle-check text-emerald-400 shrink-0"></i>' : '<i class="fa-solid fa-circle-xmark text-rose-400 shrink-0"></i>') : ''}
+                                                    </button>
+                                                `;
+                                            }).join('')}
+                                        </div>
+                                        ${selectedOpt !== undefined ? `
+                                            <div class="mt-3 p-3 rounded-lg text-xs leading-relaxed ${isCorrect ? 'bg-emerald-950/40 border border-emerald-500/30 text-emerald-300' : 'bg-rose-950/40 border border-rose-500/30 text-rose-300'}">
+                                                <strong>${isCorrect ? '정답입니다!' : '다시 생각해 보세요!'}</strong> ${escapeHtml(qItem.explanation)}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        <div class="mt-6 pt-5 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                            <div class="text-xs text-slate-400">
+                                3문항을 모두 맞히면 현재 단계가 완료 처리되며 다음 단계로 넘어갈 수 있습니다.
+                            </div>
+                            <button onclick="verifyAndCompleteStep(${step.id})" class="w-full sm:w-auto justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white keep-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-900/50 transition flex items-center gap-2 shrink-0">
+                                <i class="fa-solid fa-award"></i> <span>채점 및 단계 완료하기</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMainWorkspace() {
+            renderSidebarAndHeader();
+            const step = CURRICULUM_DATA.find(s => s.id === appState.currentStepId);
+            const container = document.getElementById('tabContentContainer');
+
+            if (appState.currentTab === 'concept') {
+                container.innerHTML = renderConceptTab(step);
+            } else if (appState.currentTab === 'lab') {
+                container.innerHTML = renderLabTab(step);
+                initLabForStep(step);
+            } else if (appState.currentTab === 'quiz') {
+                container.innerHTML = renderQuizTab(step);
+            }
+        }
+
+        function initLabForStep(step) {
+            if (step.labType === 'mtv_flow') {
+                runMtvStep(1);
+            } else if (step.labType === 'dtl_sandbox') {
+                updateDtlPreview();
+            } else if (step.labType === 'model_migration') {
+                migrationState = { hasExtraFields: false, madeMigrations: true, migratedCols: ['id (INTEGER PK)', 'title (VARCHAR(10))', 'content (TEXT)'] };
+                updateModelLabView();
+            } else if (step.labType === 'orm_shell') {
+                renderOrmTable();
+            } else if (step.labType === 'crud_simulator') {
+                renderCrudArticles();
+            } else if (step.labType === 'modelform_inspector') {
+                validateModelFormLab();
+            } else if (step.labType === 'static_media_checker') {
+                checkMediaUploadStatus();
+            }
+        }
+
+        // Lab 1: MTV Flow
+        function runMtvStep(stage) {
+            const stages = [
+                {
+                    title: "전체 MTV 아키텍처 요약",
+                    badge: "Overview",
+                    desc: "Client(브라우저) ➔ urls.py ➔ views.py (중심 컨트롤러) ➔ models.py (DB) & templates (.html) ➔ Client 응답",
+                    code: "각 STEP 버튼을 눌러 세부 역할을 확인하세요."
+                },
+                {
+                    title: "STEP 1: Client의 HTTP 요청 전송",
+                    badge: "HTTP Request",
+                    desc: "사용자가 웹 브라우저 주소창에 `http://127.0.0.1:8000/articles/`를 입력하면 서버로 HTTP GET 요청이 전송됩니다.",
+                    code: "GET /articles/ HTTP/1.1\nHost: 127.0.0.1:8000"
+                },
+                {
+                    title: "STEP 2: URLs (urls.py) 경로 매핑",
+                    badge: "URL Dispatcher",
+                    desc: "`urls.py`에서 요청된 URL 패턴(`'articles/'`)과 일치하는 경로를 찾아 매핑된 `views.index` 함수를 호출합니다.",
+                    code: "# urls.py\nurlpatterns = [\n    path('articles/', views.index),\n]"
+                },
+                {
+                    title: "STEP 3: View (views.py) 비즈니스 로직 수행",
+                    badge: "MTV - View",
+                    desc: "`views.index(request)` 함수가 실행됩니다. 필요한 경우 Model을 통해 DB 데이터를 조회하고, 렌더링할 Template과 데이터를 연결합니다.",
+                    code: "# articles/views.py\ndef index(request):\n    articles = Article.objects.all()\n    return render(request, 'articles/index.html', {'articles': articles})"
+                },
+                {
+                    title: "STEP 4: Model (models.py) & Database 통신",
+                    badge: "MTV - Model",
+                    desc: "View의 요청에 따라 Model 클래스가 ORM을 통해 `db.sqlite3`에서 게시글 레코드들을 조회하여 파이썬 객체(QuerySet)로 반환합니다.",
+                    code: "# articles/models.py\nclass Article(models.Model):\n    title = models.CharField(max_length=10)\n    content = models.TextField()"
+                },
+                {
+                    title: "STEP 5: Template (.html) 렌더링 및 HTTP 응답 반환",
+                    badge: "MTV - Template",
+                    desc: "`render()` 함수가 `index.html` 템플릿 파일에 context 데이터를 결합하여 완성된 HTML 문서를 클라이언트 브라우저에 응답합니다.",
+                    code: "<!-- articles/index.html -->\n<h1>게시글 목록</h1>\n{% for article in articles %}\n  <p>{{ article.title }}</p>\n{% endfor %}"
+                }
+            ];
+            const info = stages[stage] !== undefined ? stages[stage] : stages[1];
+
+            // Update active visual state on MTV buttons
+            document.querySelectorAll('.mtv-btn').forEach(btn => {
+                const btnStep = Number(btn.getAttribute('data-mtv-step'));
+                const isLast = btnStep === 5;
+                const spanClass = isLast ? 'col-span-2 sm:col-span-1' : '';
+                if (btnStep === stage) {
+                    btn.className = `mtv-btn ${spanClass} p-3 rounded-xl border border-emerald-500 bg-emerald-950/40 text-left transition`;
+                } else {
+                    btn.className = `mtv-btn ${spanClass} p-3 rounded-xl border border-slate-800 bg-slate-950 text-left transition hover:border-slate-700`;
+                }
+            });
+
+            const display = document.getElementById('mtvStageDisplay');
+            if (!display) return;
+            display.innerHTML = `
+                <div>
+                    <div class="flex flex-wrap items-center gap-2 mb-2">
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-xs font-bold">${info.badge}</span>
+                        <h4 class="font-bold text-white text-sm sm:text-base">${info.title}</h4>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-300 mb-4 leading-relaxed">${info.desc}</p>
+                </div>
+                <div class="vscode-editor vscode-code p-3 sm:p-3.5 rounded-lg font-mono text-xs overflow-x-auto">${highlightVSCode(info.code, true)}</div>
+            `;
+        }
+
+        // Lab 2: DTL Sandbox
+        function updateDtlPreview() {
+            const nameInput = document.getElementById('dtlNameInput');
+            const menusInput = document.getElementById('dtlMenusInput');
+            const out = document.getElementById('dtlBrowserOutput');
+            if (!nameInput || !menusInput || !out) return;
+
+            const name = nameInput.value.trim() || '익명';
+            const rawMenus = menusInput.value.split(',').map(s => s.trim()).filter(Boolean);
+
+            const listHtml = rawMenus.length > 0
+                ? rawMenus.map((m, i) => `<li class="text-sm text-slate-200"><span class="text-emerald-400 font-mono font-bold">${i + 1}</span>번 메뉴: ${escapeHtml(m)}</li>`).join('')
+                : `<li class="text-sm text-amber-400 font-medium">메뉴가 없습니다. ({% empty %} 블록 실행됨)</li>`;
+
+            out.innerHTML = `
+                <h3 class="text-base font-extrabold text-white border-b border-slate-800 pb-2">
+                    환영합니다, <span class="text-emerald-400">${escapeHtml(name.toUpperCase())}</span>님! (글자수: ${name.length})
+                </h3>
+                <ul class="space-y-1.5 pl-1">
+                    ${listHtml}
+                </ul>
+            `;
+        }
+
+        // Lab 3: Model & Migrations
+        let migrationState = {
+            hasExtraFields: false,
+            madeMigrations: true,
+            migratedCols: ['id (INTEGER PK)', 'title (VARCHAR(10))', 'content (TEXT)']
+        };
+
+        function updateModelLabView() {
+            const chk = document.getElementById('toggleTimestampFields');
+            const codePre = document.getElementById('modelLabCodePreview');
+            const colsDiv = document.getElementById('sqliteTableCols');
+            if (!chk || !codePre || !colsDiv) return;
+
+            migrationState.hasExtraFields = chk.checked;
+            migrationState.madeMigrations = false;
+
+            let code = `class Article(models.Model):\n    title = models.CharField(max_length=10)\n    content = models.TextField()`;
+            if (migrationState.hasExtraFields) {
+                code += `\n    created_at = models.DateTimeField(auto_now_add=True)\n    updated_at = models.DateTimeField(auto_now=True)`;
+            }
+            codePre.innerHTML = highlightVSCode(code, true);
+
+            colsDiv.innerHTML = migrationState.migratedCols.map(c => `
+                <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-emerald-500/40 text-xs font-mono text-emerald-300">${c}</span>
+            `).join('');
+        }
+
+        function runMigrationCmd(cmd) {
+            const term = document.getElementById('migrationTerminalOut');
+            const colsDiv = document.getElementById('sqliteTableCols');
+            if (!term) return;
+
+            if (cmd === 'makemigrations') {
+                migrationState.madeMigrations = true;
+                if (migrationState.hasExtraFields) {
+                    term.textContent = `$ python manage.py makemigrations\nIt is impossible to add the field 'created_at' with 'auto_now_add=True' without a default.\n[default: timezone.now] >>> (Enter 입력됨)\nMigrations for 'articles':\n  articles/migrations/0002_article_created_at_article_updated_at.py\n    - Add field created_at to article\n    - Add field updated_at to article`;
+                } else {
+                    term.textContent = `$ python manage.py makemigrations\nMigrations for 'articles':\n  articles/migrations/0001_initial.py\n    - Create model Article`;
+                }
+            } else if (cmd === 'migrate') {
+                if (!migrationState.madeMigrations) {
+                    term.textContent = `$ python manage.py migrate\n[주의!] 모델 변경 후 아직 makemigrations를 실행하지 않았습니다!\n먼저 'python manage.py makemigrations'로 설계도를 생성하세요.`;
+                    return;
+                }
+                if (migrationState.hasExtraFields) {
+                    migrationState.migratedCols = ['id (INTEGER PK)', 'title (VARCHAR(10))', 'content (TEXT)', 'created_at (DATETIME)', 'updated_at (DATETIME)'];
+                    term.textContent = `$ python manage.py migrate\nOperations to perform:\n  Apply all migrations: admin, articles, auth, contenttypes, sessions\nRunning migrations:\n  Applying articles.0002_article_created_at_article_updated_at... OK`;
+                } else {
+                    migrationState.migratedCols = ['id (INTEGER PK)', 'title (VARCHAR(10))', 'content (TEXT)'];
+                    term.textContent = `$ python manage.py migrate\nRunning migrations:\n  Applying articles.0001_initial... OK`;
+                }
+                if (colsDiv) {
+                    colsDiv.innerHTML = migrationState.migratedCols.map(c => `
+                        <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-emerald-500/40 text-xs font-mono text-emerald-300">${c}</span>
+                    `).join('');
+                }
+            } else if (cmd === 'showmigrations') {
+                term.textContent = `$ python manage.py showmigrations\narticles\n [X] 0001_initial\n ${migrationState.migratedCols.length > 3 ? '[X]' : '[ ]'} 0002_article_created_at_article_updated_at`;
+            }
+        }
+
+        // Lab 4: ORM Shell
+        function renderOrmTable() {
+            const tbody = document.getElementById('ormTableBody');
+            const countSpan = document.getElementById('ormRowCount');
+            if (!tbody) return;
+            countSpan.textContent = `총 ${virtualArticlesDB.length}개 행`;
+            tbody.innerHTML = virtualArticlesDB.map(row => `
+                <tr class="text-slate-200">
+                    <td class="py-2 px-2 text-emerald-400 font-bold">${row.id}</td>
+                    <td class="py-2 px-2">${escapeHtml(row.title)}</td>
+                    <td class="py-2 px-2 text-slate-400">${escapeHtml(row.content)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function execOrmCmd(action) {
+            const out = document.getElementById('ormShellOutput');
+            if (!out) return;
+
+            if (action === 'all') {
+                const repr = virtualArticlesDB.map(a => `<Article: Article object (${a.id})>`).join(', ');
+                out.textContent = `>>> Article.objects.all()\n<QuerySet [${repr}]>`;
+            } else if (action === 'create') {
+                const newArt = { id: nextVirtualId++, title: `새 글 #${nextVirtualId - 1}`, content: "ORM save()로 생성됨", created_at: "방금 전" };
+                virtualArticlesDB.push(newArt);
+                out.textContent = `>>> article = Article(title='${newArt.title}', content='${newArt.content}')\n>>> article.save()\n>>> article.pk\n${newArt.id}  # save() 호출 후 DB에 저장되어 PK가 부여됨!`;
+            } else if (action === 'get1') {
+                const first = virtualArticlesDB[0];
+                if (first) {
+                    out.textContent = `>>> a = Article.objects.get(pk=${first.id})\n>>> a.title\n'${first.title}'  # 단일 모델 인스턴스 반환`;
+                } else {
+                    out.textContent = `>>> Article.objects.get(pk=1)\nDoesNotExist: Article matching query does not exist.`;
+                }
+            } else if (action === 'update1') {
+                if (virtualArticlesDB.length > 0) {
+                    virtualArticlesDB[0].title = "제목 수정됨! (save 완료)";
+                    out.textContent = `>>> a = Article.objects.get(pk=${virtualArticlesDB[0].id})\n>>> a.title = '제목 수정됨! (save 완료)'\n>>> a.save()  # 기존 행 UPDATE 완료`;
+                } else {
+                    out.textContent = `수정할 게시글이 없습니다. 먼저 생성(Create)을 눌러주세요.`;
+                }
+            } else if (action === 'deleteLast') {
+                if (virtualArticlesDB.length > 0) {
+                    const removed = virtualArticlesDB.pop();
+                    out.textContent = `>>> article = Article.objects.get(pk=${removed.id})\n>>> article.delete()\n(1, {'articles.Article': 1})  # PK=${removed.id} 게시글 삭제 완료`;
+                } else {
+                    out.textContent = `삭제할 게시글이 없습니다.`;
+                }
+            }
+            renderOrmTable();
+        }
+
+        // Lab 5: CRUD Simulator
+        function renderCrudArticles() {
+            const list = document.getElementById('crudArticleList');
+            if (!list) return;
+            list.innerHTML = virtualArticlesDB.map(art => `
+                <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between gap-2">
+                    <div>
+                        <span class="text-xs font-mono text-emerald-400 font-bold">#${art.id}</span>
+                        <span class="text-xs font-bold text-white ml-1">${escapeHtml(art.title)}</span>
+                        <p class="text-[11px] text-slate-400 mt-0.5">${escapeHtml(art.content)}</p>
+                    </div>
+                    <button onclick="deleteCrudArticle(${art.id})" class="px-2.5 py-1 rounded bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-[11px] font-mono shrink-0">
+                        POST delete
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function submitVirtualPost() {
+            const hasCsrf = document.getElementById('csrfCheckToggle').checked;
+            const title = document.getElementById('crudTitleInput').value.trim();
+            const content = document.getElementById('crudContentInput').value.trim();
+            const log = document.getElementById('crudResponseLog');
+
+            if (!hasCsrf) {
+                log.className = "p-3 rounded-lg bg-rose-950/60 border border-rose-500/50 font-mono text-xs text-rose-300";
+                log.innerHTML = `<strong>HTTP 403 Forbidden (CSRF verification failed)</strong><br>{% csrf_token %} 태그가 누락되어 Django가 POST 요청을 차단했습니다!`;
+                return;
+            }
+            if (!title) {
+                log.className = "p-3 rounded-lg bg-amber-950/60 border border-amber-500/50 font-mono text-xs text-amber-300";
+                log.textContent = "제목을 입력해주세요.";
+                return;
+            }
+            const created = { id: nextVirtualId++, title, content: content || '내용 없음', created_at: '방금' };
+            virtualArticlesDB.push(created);
+            log.className = "p-3 rounded-lg bg-emerald-950/60 border border-emerald-500/50 font-mono text-xs text-emerald-300";
+            log.innerHTML = `<strong>HTTP 302 Found ➔ redirect('articles:detail', ${created.id})</strong><br>DB 저장 성공 후 상세 페이지(GET /articles/${created.id}/)로 안전하게 리다이렉트되었습니다!`;
+            renderCrudArticles();
+        }
+
+        function deleteCrudArticle(id) {
+            virtualArticlesDB = virtualArticlesDB.filter(a => a.id !== id);
+            const log = document.getElementById('crudResponseLog');
+            if (log) {
+                log.className = "p-3 rounded-lg bg-blue-950/60 border border-blue-500/50 font-mono text-xs text-blue-300";
+                log.innerHTML = `<strong>POST /articles/${id}/delete/ ➔ redirect('articles:index')</strong><br>#${id} 게시글이 삭제되고 목록 페이지로 리다이렉트되었습니다.`;
+            }
+            renderCrudArticles();
+        }
+
+        // Lab 6: ModelForm Inspector
+        function validateModelFormLab() {
+            const titleEl = document.getElementById('mfTitleInput');
+            const modeEl = document.getElementById('mfInstanceSelect');
+            const resEl = document.getElementById('mfValidationResult');
+            if (!titleEl || !modeEl || !resEl) return;
+
+            const val = titleEl.value;
+            const mode = modeEl.value;
+            const isValid = val.trim().length > 0 && val.length <= 10;
+
+            let sqlAction = mode === 'instance'
+                ? 'UPDATE articles_article SET ... (기존 게시글 수정)'
+                : 'INSERT INTO articles_article ... (새 게시글 생성)';
+
+            if (isValid) {
+                resEl.innerHTML = `
+                    <div class="text-emerald-400 font-bold text-sm"><i class="fa-solid fa-circle-check mr-1"></i> form.is_valid() ➔ True (글자수: ${val.length}/10)</div>
+                    <div class="text-slate-300">실행될 form.save() 동작: <span class="text-amber-300">${sqlAction}</span></div>
+                    <div class="text-slate-400">이후 동작: <span class="text-emerald-300">return redirect('articles:detail', article.pk)</span></div>
+                `;
+            } else {
+                const reason = val.trim().length === 0
+                    ? "필수 입력 항목입니다. (blank=False 기본값)"
+                    : `이 값이 최대 10자 이하인지 확인하세요 (현재 ${val.length}자).`;
+                resEl.innerHTML = `
+                    <div class="text-rose-400 font-bold text-sm"><i class="fa-solid fa-triangle-exclamation mr-1"></i> form.is_valid() ➔ False</div>
+                    <div class="text-rose-300">form.errors['title']: "${reason}"</div>
+                    <div class="text-slate-400">이후 동작: if 블록을 건너뛰고 에러 메시지가 담긴 form을 그대로 <span class="text-amber-300">render(request, 'articles/create.html', {'form': form})</span>로 반환!</div>
+                `;
+            }
+        }
+
+        // Lab 7: Static & Media Checker
+        function checkMediaUploadStatus() {
+            const chks = Array.from(document.querySelectorAll('.media-chk'));
+            const panel = document.getElementById('mediaStatusPanel');
+            if (!panel || chks.length === 0) return;
+
+            const states = chks.map(c => c.checked);
+            const allChecked = states.every(Boolean);
+
+            if (allChecked) {
+                panel.innerHTML = `
+                    <div class="text-center space-y-2">
+                        <div class="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto text-xl">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <h4 class="font-bold text-emerald-300 text-base">완벽합니다! Media 이미지 업로드 성공!</h4>
+                        <p class="text-xs text-slate-300 font-mono">실제 파일: /media/sample.png 저장됨<br>DB 컬럼: 'sample.png' 경로 문자열 저장됨<br>템플릿 출력: &lt;img src="{{ article.image.url }}"&gt;</p>
+                    </div>
+                `;
+            } else {
+                let missingMsg = '';
+                if (!states[0]) missingMsg = 'Pillow 패키지가 없으면 ImageField 사용 시 에러가 발생합니다.';
+                else if (!states[1]) missingMsg = 'MEDIA_ROOT와 MEDIA_URL이 설정되지 않아 파일 저장 위치와 웹 경로를 알 수 없습니다.';
+                else if (!states[2]) missingMsg = 'form 태그에 enctype="multipart/form-data"가 없으면 파일 이름만 가고 실제 파일 데이터는 전송되지 않습니다!';
+                else if (!states[3]) missingMsg = 'ArticleForm(request.POST, request.FILES)에 request.FILES를 넘기지 않아 이미지가 무시되었습니다!';
+
+                panel.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="text-amber-400 font-bold text-sm"><i class="fa-solid fa-wrench mr-1"></i> 아직 누락된 설정이 있습니다 (${states.filter(Boolean).length}/4 완료)</div>
+                        <p class="text-xs text-slate-300 leading-relaxed">${missingMsg}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Quiz Selection & Step Completion
+        function selectQuizOption(stepId, qIdx, optIdx) {
+            appState.quizSelections[`${stepId}_${qIdx}`] = optIdx;
+            saveState();
+            renderMainWorkspace();
+        }
+
+        function verifyAndCompleteStep(stepId) {
+            const step = CURRICULUM_DATA.find(s => s.id === stepId);
+            let correctCount = 0;
+            step.quiz.forEach((q, idx) => {
+                if (appState.quizSelections[`${stepId}_${idx}`] === q.answer) {
+                    correctCount++;
+                }
+            });
+
+            if (correctCount === step.quiz.length) {
+                if (!appState.completedSteps.includes(stepId)) {
+                    appState.completedSteps.push(stepId);
+                    saveState();
+                }
+                renderMainWorkspace();
+                if (stepId < CURRICULUM_DATA.length) {
+                    showToast(`축하합니다! STEP 0${stepId} 마스터 완료! 다음 단계(STEP 0${stepId + 1})가 열렸습니다.`);
+                } else {
+                    showToast(`축하합니다! Django 7단계 전 과정을 모두 마스터하셨습니다!`);
+                }
+            } else {
+                showToast(`현재 ${correctCount}/${step.quiz.length}문항 정답입니다. 3문항 모두 정답을 선택해주세요!`, 'warn');
+            }
+        }
+
+        // Navigation Helpers
+        function selectStep(stepId) {
+            if (!isStepUnlocked(stepId)) {
+                showToast(`순차 학습 모드입니다. 먼저 STEP 0${stepId - 1}의 퀴즈를 통과하거나 상단에서 '자유 탐색 모드'로 전환하세요.`, 'warn');
+                return;
+            }
+            appState.currentStepId = stepId;
+            appState.currentTab = 'concept';
+            saveState();
+            renderMainWorkspace();
+            closeMobileSidebar();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function switchTab(tabName) {
+            appState.currentTab = tabName;
+            renderMainWorkspace();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function copyCodeBlock(idx) {
+            const rawEl = document.getElementById(`rawCode_${idx}`);
+            if (!rawEl) return;
+            const textarea = document.createElement('textarea');
+            textarea.value = rawEl.value;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast('코드가 클립보드에 복사되었습니다!');
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function closeMobileSidebar() {
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('sidebarBackdrop').classList.add('hidden');
+        }
+
+        window.onload = function () {
+            loadState();
+            applyTheme();
+            renderMainWorkspace();
+
+            // Theme Toggle Button (Dark / Light mode)
+            document.getElementById('themeToggleBtn').addEventListener('click', () => {
+                appState.darkMode = !appState.darkMode;
+                applyTheme();
+                saveState();
+                showToast(appState.darkMode ? '다크 모드로 전환되었습니다.' : '라이트 모드로 전환되었습니다.');
+            });
+
+            // Tab Buttons
+            document.querySelectorAll('.step-tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    switchTab(btn.getAttribute('data-tab'));
+                });
+            });
+
+            // Prev / Next Step Buttons
+            document.getElementById('prevStepBtn').addEventListener('click', () => {
+                if (appState.currentStepId > 1) {
+                    selectStep(appState.currentStepId - 1);
+                }
+            });
+            document.getElementById('nextStepBtn').addEventListener('click', () => {
+                if (appState.currentStepId < CURRICULUM_DATA.length) {
+                    selectStep(appState.currentStepId + 1);
+                }
+            });
+
+            // Sequential Lock Toggle
+            document.getElementById('freeModeToggle').addEventListener('click', () => {
+                appState.sequentialLock = !appState.sequentialLock;
+                saveState();
+                renderMainWorkspace();
+                showToast(appState.sequentialLock ? '순차 학습 모드가 활성화되었습니다.' : '자유 탐색 모드가 활성화되어 모든 단계를 열람할 수 있습니다.');
+            });
+
+            // Cheat Sheet Modal
+            const modal = document.getElementById('cheatSheetModal');
+            document.getElementById('cheatSheetBtn').addEventListener('click', () => {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            });
+            document.getElementById('closeCheatSheetBtn').addEventListener('click', () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            });
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            });
+
+            // Reset Progress
+            document.getElementById('resetProgressBtn').addEventListener('click', () => {
+                appState.completedSteps = [];
+                appState.quizSelections = {};
+                appState.currentStepId = 1;
+                appState.currentTab = 'concept';
+                saveState();
+                renderMainWorkspace();
+                showToast('학습 진도 기록이 초기화되었습니다.');
+            });
+
+            // Mobile Menu
+            document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.remove('-translate-x-full');
+                document.getElementById('sidebarBackdrop').classList.remove('hidden');
+            });
+            const closeMobileBtn = document.getElementById('closeMobileSidebarBtn');
+            if (closeMobileBtn) {
+                closeMobileBtn.addEventListener('click', closeMobileSidebar);
+            }
+            document.getElementById('sidebarBackdrop').addEventListener('click', closeMobileSidebar);
+
+            // Keyboard Shortcuts (1, 2, 3 for tabs)
+            window.addEventListener('keydown', (e) => {
+                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+                if (e.key === '1') switchTab('concept');
+                if (e.key === '2') switchTab('lab');
+                if (e.key === '3') switchTab('quiz');
+            });
+        };
+    </script>
+</body>
+</html>
